@@ -60,10 +60,6 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     console.log('lateloa executing');
                     parseLoA(e.message, 'late');
                     break;
-                case '!commands':
-                    console.log('commands executing');
-                    sendDiscordMessage(songchannel, 'You can say: !loa, !lateloa');
-                    break;
                 case '!loa':
                     parseLoA(e.message, 'normal');
                     break;
