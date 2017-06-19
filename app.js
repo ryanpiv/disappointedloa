@@ -7,8 +7,8 @@ var moment = require('moment');
 const Events = Discordie.Events;
 const client = new Discordie();
 
-//var loachannel = '300448798365450240'; //real channel
-var loachannel = '266749722692288512'; //test channel
+var loachannel = '237085726208950272'; //real channel
+//var loachannel = '266749722692288512'; //test channel
 
 var connection = mysql.createConnection({
     host: 'mysql4.gear.host',
@@ -27,8 +27,8 @@ var helpText = '__**Disappointed Leave of Absensce (LoA) Bot Help**__\n\n' +
 '**!LoAListForDate:** Lists all LoAs for a specific date.\nFormat: !LoAListForDate <date>\nExample: !LoAListForDate 6/19/17\n';
 
 client.connect({
-    token: 'MzE2MjE2MDQ2MTA3MzYxMjgx.DAjXfQ.9UJJewQgiPFgYne--eF2SaL33OE' //test channel
-        //token: 'MzAwODEwOTE1NTg0OTMzODg4.DAZIDw.RAsvejCdsKL986Vc6MdJEvpHV5c' //real channel
+    //token: 'MzE2MjE2MDQ2MTA3MzYxMjgx.DAjXfQ.9UJJewQgiPFgYne--eF2SaL33OE' //test channel
+    token: 'MzI2NDc4ODE4Mjg4MDc0NzUy.DCnYog.nEMacNJyvhX60N7JVmyOu2v6xmg' //real channel
 });
 
 client.Dispatcher.on(Events.GATEWAY_READY, e => {
