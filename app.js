@@ -20,7 +20,7 @@ var connection = mysql.createConnection({
     database: 'disappointedloa'
 });
 
-var versionNum = 1.2.1;
+var versionNum = '1.2.3';
 
 var helpText = '__**Disappointed Leave of Absensce (LoA) Bot Help**__\n\n' +
     '**!LoA**: Create a basic LoA.\nFormat: !loa <Date>, <Reason (optional)>\n' +
