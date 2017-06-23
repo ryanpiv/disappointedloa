@@ -61,7 +61,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 case '!noloa':
                     console.log('noloa executing');
                     var permissions = client.User.permissionsFor(client.Channels.get(loachannel));
-                    if (permissions.General.ADMINISTRATOR == true) {
+                    if (permissions.General.ADMIN == true || permissions.General.Admin == true) {
                         var err = "I could not parse a User object from the supplied parameters.  Please pass in a valid User object by using the @ command.  For help or reference formats for creating an LoA, type !LoAHelp."
                         if (e.message.mentions.length > 0) {
                             for (var i = 0; i < e.message.mentions.length; i++) {
@@ -138,7 +138,13 @@ function parseLoA(message, type) {
     if (type.toLowerCase() !== 'noloa') {
         var messageContent = message.content.replace('!loa' + type, '');
         var messageArr = messageContent.toLowerCase().split(',');
-        if (Date.parse(messageArr[0])) {
+        if (Date.parse(messageArr[0]) || messageArr[0] == 'today') {
+        	if(messageArr[0] == 'today'){
+        		messageArr[0] = moment().format('YYYY-MM-DD');
+        	}
+        	if(moment().isSameOrAfter(messageArr[0], 'year')){
+        		messageArr[0] = moment(messageArr[0]).set('year', moment().get('year'));
+        	}
             if (moment().isSameOrBefore(new Date(messageArr[0]).toISOString(), 'day')) {
                 //loa.date = moment(messageArr[0]).format('dddd, MMMM Do YYYY');
                 loa.date = moment(new Date(messageArr[0]).toISOString()).format('YYYY-MM-DD');
@@ -194,8 +200,11 @@ function parseLoaUpdate(loaObj, messageArr) {
             } else {
                 sendDiscordMessage(loachannel, 'Please enter a future or current date for your LoA to update to and ensure you are using the correct format.  For LoA formatting help, type !LoAHelp.');
             }
-        } else {
-            sendDiscordMessage(loachannel, 'I could not parse the second date entered. Please enter a valid second date to update to and ensure you are using the correct format.  For LoA formatting help, type !LoAHelp.');
+    	} else {
+            loaObj.updateReason = messageArr[1];
+        	loaObj.updateDate = messageArr[0];
+        	loaTypeSwitch(loaObj);
+            //sendDiscordMessage(loachannel, 'I could not parse the second date entered. Please enter a valid second date to update to and ensure you are using the correct format.  For LoA formatting help, type !LoAHelp.');
         }
     } else {
         sendDiscordMessage(loachannel, 'I could not find a second date for the update.  Please enter a second date and ensure you are using the correct format.  For LoA formatting help, type !LoAHelp.');
@@ -210,7 +219,7 @@ function addloa(loaObj) {
             sendDiscordMessage(loachannel, error);
         } else {
             if (results.length > 0) {
-                sendDiscordMessage(loachannel, "You've already got an LoA for this date.  You can delete an LoA with !LoADelete or change an LoA with !LoAEdit.  For more information about commands, type !LoAHelp");
+                sendDiscordMessage(loachannel, "You've already got an LoA for this date.  You can delete an LoA with !LoADelete or change an LoA with !LoAUpdate.  For more information about commands, type !LoAHelp");
             } else {
                 var sql = "INSERT INTO loas (discordid, discordusername, reason, date, type) VALUES ('" + loaObj.discordId + "', '" + loaObj.discordUsername + "', '" + loaObj.reason + "', '" + loaObj.date + "', '" + loaObj.type + "')";
                 connection.query(sql, function(error, results, fields) {
@@ -237,7 +246,7 @@ function deleteloa(loaObj) {
 }
 
 function updateloa(loaObj) {
-    var sql = "SELECT * FROM loas WHERE date = DATE('" + moment(loaObj.date).format('YYYY-MM-DD') + "') AND discordid='" + loaObj.discordId + "'";
+    var sql = "SELECT * FROM loas WHERE date = DATE('" + moment(loaObj.date).format('YYYY-MM-DD') + "') AND type <> 'noloa' AND discordid='" + loaObj.discordId + "'";
     console.log(sql);
     console.log(loaObj);
     connection.query(sql, function(error, results, fields) {
