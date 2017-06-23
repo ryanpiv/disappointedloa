@@ -60,7 +60,10 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     break;
                 case '!noloa':
                     console.log('noloa executing');
-                    var permissions = client.User.permissionsFor(client.Channels.get(loachannel));
+                    var person = client.Users.get(e.message.author.id);
+                    var permissions = person.User.permissionsFor(client.Channels.get(loachannel));
+                    
+
                     if (permissions.General.ADMIN == true || permissions.General.Admin == true) {
                         var err = "I could not parse a User object from the supplied parameters.  Please pass in a valid User object by using the @ command.  For help or reference formats for creating an LoA, type !LoAHelp."
                         if (e.message.mentions.length > 0) {
