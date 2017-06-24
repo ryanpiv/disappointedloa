@@ -59,10 +59,6 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
     if (e.message.channel_id == loachannel) {
         var command = e.message.content.toLowerCase();
 
-        var user = client.Users.get(e.message.author.id);
-        var channel = client.Channels.find(c => c.id == loachannel);
-        var permissions = user.permissionsFor(channel);
-
         var whitespace = '';
         if (command.substring(0, 1) == '!') {
             console.log('received full command: ' + command);
@@ -77,7 +73,12 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     break;
                 case '!noloa':
                     console.log('noloa executing');
-                    if (permissions.General.ADMINISTRATOR) {
+
+			        var user = client.Users.get(e.message.author.id);
+			        var channel = client.Channels.find(c => c.id == loachannel);
+			        var permissions = user.permissionsFor(channel);
+
+                    if (permissions.General.ADMINISTRATOR == true) {
                         var err = "I could not parse a User object from the supplied parameters.  Please pass in a valid User object by using the @ command.  For help or reference formats for creating an LoA, type !LoAHelp."
                         if (e.message.mentions.length > 0) {
                             for (var i = 0; i < e.message.mentions.length; i++) {
@@ -100,8 +101,12 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     break;
                 case '!loadelete':
                     console.log('loadelete executing');
+			        var user = client.Users.get(e.message.author.id);
+			        var channel = client.Channels.find(c => c.id == loachannel);
+			        var permissions = user.permissionsFor(channel);
+
                     if (e.message.mentions.length > 0) {
-                        if (permissions.General.ADMINISTRATOR) {
+                        if (permissions.General.ADMINISTRATOR == true) {
                             for (var i = 0; i < e.message.mentions.length; i++) {
                                 e.message.author = e.message.mentions[i];
                                 parseDeleteLoA(e.message, 'delete', e.message.mentions[i]);
