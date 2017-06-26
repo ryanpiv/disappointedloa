@@ -23,19 +23,17 @@ var connection = mysql.createConnection({
 
 var versionNum = '2.1';
 
-var sampleDate = moment().utcOffset(240).format('MM/DD/YY hh:mm');
+var sampleDate = moment().utcOffset(240).format('MM/DD/YY');
 
 var helpText = '__**Disappointed Leave of Absensce (LoA) Bot Help**__\n\n' +
     '**!LoA**: Create a basic LoA.\nFormat: !loa <Date>, <Reason (optional)>\n' +
     'Example: !LoA ' + sampleDate + ', I will be on vacation.  You do not need to provide a reason, but someone people just like to.  In most cases, not providing a reason is preferred.\nExample wihout a reason: !loa ' + sampleDate + '\n\n' +
     '**!LoALate:** Creates a basic LoA, but defines a property to let the officers know you only plan on being late and not missing entirely.\nFormat: !LoALate: <Date>, <Reason (optional)>\nExample: !LoALate ' + sampleDate + ', I will be 15 minutes late.  The reason is still optional.\n\n' +
     '**!LoADelete:** Deletes an LoA that has yet to pass.\nFormat: !LoADelete <Date>\nYou may only delete your LoA before or on the date originally entered.  LoAs after that date may not be deleted.\nExample: !LoADelete ' + sampleDate + '\n\nAdmins: You may delete dates for others with this command using the format: !LoADelete <date>, <@User>.\n\nExample: !LoADelete today, @smaktat\n\n' +
-    '**!LoAUpdate:** Updates an existing LoA entry.\nFormat: !LoAUpdate <PreviousDate>, <NewDate>, <NewReason (optional)>\nAs with deletes, updates may only be edited before or on the date entered.\nExample: !LoAUpdate ' + sampleDate + ', 6/20/17, Work schedule changed.  The LoA for 6/19 was moved to 6/20 and the reason was also changed.\nIf you would like to update a reason for an existing entry, use the format !LoAUpdate <date>, <reason>.\nExample: !LoAUpdate today, I will be an hour late.\n\n' +
+    '**!LoAUpdate:** Updates an existing LoA entry.\nFormat: !LoAUpdate <PreviousDate>, <NewDate>, <NewReason (optional)>\nAs with deletes, updates may only be edited before or on the date entered.\nExample: !LoAUpdate 6/19/17, 6/20/17, Work schedule changed.  The LoA for 6/19 was moved to 6/20 and the reason was also changed.\nIf you would like to update a reason for an existing entry, use the format !LoAUpdate <date>, <reason>.\nExample: !LoAUpdate today, I will be an hour late.\n\n' +
     '**!LoAList:** Lists all LoAs entered for the user who entered the command.\nExample: !LoAList\n\n' +
     '**!LoAListForDate:** Lists all LoAs for a specific date.\nFormat: !LoAListForDate <date>\nExample: !LoAListForDate ' + sampleDate + '\n\n' +
-    '**!NoLoA:** Creates an LoA for a user.  This command is only useable by members with Administrator access to the LoA channel.\nFormat: !NoLoA <date>, <@User>\nExample: !NoLoA ' + sampleDate + ', @smaktat.\n\n' + 
-    '**<today>**: The keyword "today" can be used as a quick way to state the current date instead of typing it out.\nFormat: <!command> <today>\nExample: !loa today\n\n' + 
-    '**Date Variations**: This bot can understand many different date variations.  You can say June 24, 2017, 6/24/17, 6/24 (the bot will assume the current year), etc.  If the date you entered is invalaid, you will be notified.';
+    '**!NoLoA:** Creates an LoA for a user.  This command is only useable by members with Administrator access to the LoA channel.\nFormat: !NoLoA <date>, <@User>\nExample: !NoLoA ' + sampleDate + ', @smaktat.\n\n';
 
 client.connect({
     token: token
@@ -392,6 +390,9 @@ function sendDiscordMessage(channelId, message) {
 
 function sendDirectMessage(userId, message) {
     client.DirectMessageChannels.open(userId).then((dm) => {
+        dm.sendMessage('test');
         dm.sendMessage(helpText);
+    }).catch(function (error) {
+        console.log(error);
     });
 }
