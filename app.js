@@ -13,7 +13,7 @@ var loachannel = '237085726208950272'; //real channel
 //var loachannel = '266749722692288512'; //test channel
 
 ///var token = 'MzE2MjE2MDQ2MTA3MzYxMjgx.DAjXfQ.9UJJewQgiPFgYne--eF2SaL33OE'; //test channel
-var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DCnYog.nEMacNJyvhX60N7JVmyOu2v6xmg'; //real channel
+var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
 
 var connection = mysql.createConnection({
     host: 'mysql4.gear.host',
@@ -44,7 +44,6 @@ client.connect({
 
 client.Dispatcher.on(Events.GATEWAY_READY, e => {
     console.log('Connected as: ' + client.User.username);
-    //console.log(client);
     sendDiscordMessage(loachannel, "Disappointed LoA Bot v" + versionNum + " ready!  Type !LoAHelp to get a message about everything I can do.");
 });
 
