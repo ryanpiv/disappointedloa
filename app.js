@@ -191,8 +191,9 @@ function parseNormalLoA(message, type, loa, permissions) {
     loa.discordId = message.author.id;
     loa.discordUsername = message.author.username;
     loa.type = type;
-    var messageContent = message.content.toLowerCase().replace(type, '');
-    messageContent = message.content.toLowerCase().replace('!loa', '');
+    var messageContent = message.content.toLowerCase();
+    messageContent = messageContent.replace(type.toLowerCase(), '');
+    messageContent = messageContent.replace('!loa', '');
     var messageArr = messageContent.toLowerCase().split(',');
 
     loa.dateCheck = messageArr[0];
