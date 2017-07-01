@@ -12,7 +12,7 @@ const client = new Discordie();
 var loachannel = '237085726208950272'; //real channel
 //var loachannel = '266749722692288512'; //test channel
 
-///var token = 'MzE2MjE2MDQ2MTA3MzYxMjgx.DAjXfQ.9UJJewQgiPFgYne--eF2SaL33OE'; //test channel
+//var token = 'MzAwODEwOTE1NTg0OTMzODg4.DDh-BA.6hY1_7tQ-AbS8GCGFx0PQcxrR_s'; //test channel
 var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
 
 var connection = mysql.createConnection({
@@ -59,6 +59,10 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
         status: false,
         dateCheck: ''
     };
+    var user = client.Users.get(e.message.author.id);
+    var channel = client.Channels.find(c => c.id == loachannel);
+    var permissions = user.permissionsFor(channel);
+
     if (e.message.channel_id == loachannel) {
         var command = e.message.content.toLowerCase();
 
@@ -77,10 +81,6 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 case '!noloa':
                     console.log('noloa executing');
 
-                    var user = client.Users.get(e.message.author.id);
-                    var channel = client.Channels.find(c => c.id == loachannel);
-                    var permissions = user.permissionsFor(channel);
-
                     if (permissions.General.ADMINISTRATOR == true) {
                         var err = "I could not parse a User object from the supplied parameters.  Please pass in a valid User object by using the @ command.  For help or reference formats for creating an LoA, type !LoAHelp."
                         if (e.message.mentions.length > 0) {
@@ -96,17 +96,14 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     break;
                 case '!loalate':
                     console.log('loalate executing');
-                    parseNormalLoA(e.message, 'late', loaObj);
+                    parseNormalLoA(e.message, 'late', loaObj, permissions);
                     break;
                 case '!loa':
                     console.log('loa executing');
-                    parseNormalLoA(e.message, 'normal', loaObj);
+                    parseNormalLoA(e.message, 'normal', loaObj, permissions);
                     break;
                 case '!loadelete':
                     console.log('loadelete executing');
-                    var user = client.Users.get(e.message.author.id);
-                    var channel = client.Channels.find(c => c.id == loachannel);
-                    var permissions = user.permissionsFor(channel);
 
                     if (e.message.mentions.length > 0) {
                         if (permissions.General.ADMINISTRATOR == true) {
@@ -122,10 +119,6 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     }
                     break;
                 case '!loaupdate':
-                    var user = client.Users.get(e.message.author.id);
-                    var channel = client.Channels.find(c => c.id == loachannel);
-                    var permissions = user.permissionsFor(channel);
-
                     console.log('loaupdate executing');
                     parseUpdateLoA(e.message, 'update', loaObj, permissions);
                     break;
@@ -140,7 +133,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 case '!loalistfordate':
                     console.log('loalistfordate executing');
                     listLoAsForDate(e.message, loaObj);
-                    break;
+                	break;
                 default:
                     console.log('default executing');
                     sendDiscordMessage(loachannel, "I couldn't understand that command.  Type !LoAHelp to get a message about everything I can do.");
@@ -170,9 +163,6 @@ function checkDate(loa, permissions) {
     if (Date.parse(loa.dateCheck) || loa.dateCheck.replace(/\s/g, "").toLowerCase() == 'today') {
         loa.dateCheck = parseDateTodayAndYear(loa.dateCheck);
         if (moment().isSameOrBefore(loa.dateCheck, 'day') || permissions.General.ADMINISTRATOR == true) {
-            if (moment().isSameOrAfter(loa.dateCheck, 'day') && permissions.General.ADMINISTRATOR == true) {
-                sendDiscordMessage(loachannel, 'Admin override warning: You have entered a past date, but are approved to continue.');
-            }
             for (var i = 0; i < loaDays.length; i++) {
                 if (moment(loa.dateCheck).day() == loaDays[i]) {
                     loa.status = true;
@@ -195,7 +185,7 @@ function checkDate(loa, permissions) {
     return loa;
 }
 
-function parseNormalLoA(message, type, loa) {
+function parseNormalLoA(message, type, loa, permissions) {
     //standard loa function
     //type can be changed
     loa.discordId = message.author.id;
@@ -206,7 +196,7 @@ function parseNormalLoA(message, type, loa) {
     var messageArr = messageContent.toLowerCase().split(',');
 
     loa.dateCheck = messageArr[0];
-    loa = checkDate(loa);
+    loa = checkDate(loa, permissions);
     if (loa.status) {
         loa.date = loa.dateCheck;
         if (messageArr[1]) {
@@ -224,12 +214,12 @@ function parseUpdateLoA(message, type, loa, permissions) {
     var messageArr = messageContent.toLowerCase().split(',');
 
     loa.dateCheck = messageArr[0];
-    loa = checkDate(loa);
+    loa = checkDate(loa, permissions);
     if (loa.status) {
         loa.status = false;
         loa.date = loa.dateCheck;
         loa.dateCheck = messageArr[1];
-        loa = checkDate(loa);
+        loa = checkDate(loa, permissions);
         if(loa.status){
             loa.updateDate = loa.dateCheck;
             if (messageArr[2]) {
@@ -388,9 +378,12 @@ function listLoAsForDate(message) {
                 sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
             } else {
                 if (results.length > 0) {
-                    var strMessage = 'Active LoAs found for ' + moment(new Date(messageContent).toISOString()).format('dddd, MM/DD/YY') + '\n';
+                    var strMessage = 'Active LoAs found for ' + moment(messageContent).format('dddd, MM/DD/YY') + '\n';
                     for (var i = 0; i < results.length; i++) {
-                        strMessage += 'User: ' + results[i].discordusername + ', Reason: ' + results[i].reason + '\n';
+                        strMessage += results[i].discordusername;
+                        if(results[i].reason){
+                        	strMessage += ', ' + results[i].reason + '\n';
+                        } 
                     }
                     sendDiscordMessage(loachannel, strMessage);
                 } else {
