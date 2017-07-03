@@ -3,17 +3,19 @@
 //discord bot link: https://discordapp.com/developers/applications/me/316216046107361281
 var Discordie = require('discordie');
 var mysql = require('mysql');
+var request = require('request');
+var csv = require('csv');
 var moment = require('moment-timezone');
 moment.tz.setDefault('America/New_York');
 
 const Events = Discordie.Events;
 const client = new Discordie();
 
-var loachannel = '237085726208950272'; //real channel
-//var loachannel = '266749722692288512'; //test channel
+//var loachannel = '237085726208950272'; //real channel
+var loachannel = '266749722692288512'; //test channel
 
-//var token = 'MzAwODEwOTE1NTg0OTMzODg4.DDh-BA.6hY1_7tQ-AbS8GCGFx0PQcxrR_s'; //test channel
-var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
+var token = 'MzAwODEwOTE1NTg0OTMzODg4.DDh-BA.6hY1_7tQ-AbS8GCGFx0PQcxrR_s'; //test channel
+//var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
 
 var connection = mysql.createConnection({
     host: 'mysql4.gear.host',
@@ -80,11 +82,12 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     break;
                 case '!noloa':
                     console.log('noloa executing');
-
+                    //
                     if (permissions.General.ADMINISTRATOR == true) {
                         var err = "I could not parse a User object from the supplied parameters.  Please pass in a valid User object by using the @ command.  For help or reference formats for creating an LoA, type !LoAHelp."
                         if (e.message.mentions.length > 0) {
                             for (var i = 0; i < e.message.mentions.length; i++) {
+                                var loaObj = { date: '', reason: '', type: '', discordId: '', discordUsername: '', updateDate: '', updateReason: '', status: false, dateCheck: '' };
                                 parseNoLoA(e.message, e.message.mentions[i], 'NoLoA', loaObj, permissions);
                             }
                         } else {
@@ -133,7 +136,24 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 case '!loalistfordate':
                     console.log('loalistfordate executing');
                     listLoAsForDate(e.message, loaObj);
-                	break;
+                    break;
+                case '!loot':
+                    console.log('!loot executing');
+                    if (permissions.General.ADMINISTRATOR == true) {
+                        if (e.message.attachments) {
+                            if (e.message.attachments[0].url) {
+                                var url = e.message.attachments[0].url;
+                                loot(url, permissions);
+                            } else {
+                                sendDiscordMessage(loachannel, 'I could not find a URL to download from the Discord servers.  The file may not have uploaded to Discord correctly.  Please try again.');
+                            }
+                        } else {
+                            sendDiscordMessage(loachannel, 'The !loot command requires an attached loot file text file.  Please add an attachment with this command.');
+                        }
+                    } else {
+                        sendDiscordMessage(loachannel, 'This command is restricted to those with Administrator access only.');
+                    }
+                    break;
                 default:
                     console.log('default executing');
                     sendDiscordMessage(loachannel, "I couldn't understand that command.  Type !LoAHelp to get a message about everything I can do.");
@@ -185,6 +205,33 @@ function checkDate(loa, permissions) {
     return loa;
 }
 
+function mysql_real_escape_string(val) {
+    val = val.replace(/[\0\n\r\b\t\\'"\x1a]/g, function(s) {
+        switch (s) {
+            case "\0":
+                return "\\0";
+            case "\n":
+                return "\\n";
+            case "\r":
+                return "\\r";
+            case "\b":
+                return "\\b";
+            case "\t":
+                return "\\t";
+            case "\x1a":
+                return "\\Z";
+            case "'":
+                return "''";
+            case '"':
+                return '""';
+            default:
+                return "\\" + s;
+        }
+    });
+
+    return val;
+};
+
 function parseNormalLoA(message, type, loa, permissions) {
     //standard loa function
     //type can be changed
@@ -201,7 +248,7 @@ function parseNormalLoA(message, type, loa, permissions) {
     if (loa.status) {
         loa.date = loa.dateCheck;
         if (messageArr[1]) {
-            loa.reason = messageArr[1];
+            loa.reason = mysql_real_escape_string(messageArr[1]);
         }
         addloa(loa);
     }
@@ -221,7 +268,7 @@ function parseUpdateLoA(message, type, loa, permissions) {
         loa.date = loa.dateCheck;
         loa.dateCheck = messageArr[1];
         loa = checkDate(loa, permissions);
-        if(loa.status){
+        if (loa.status) {
             loa.updateDate = loa.dateCheck;
             if (messageArr[2]) {
                 loa.updateReason = messageArr[2];
@@ -251,7 +298,7 @@ function parseDeleteLoA(message, type, loa, permissions, loaUser) {
     if (loa.status) {
         loa.date = loa.dateCheck;
         if (messageArr[1]) {
-            loa.reason = messageArr[1];
+            loa.reason = mysql_real_escape_string(messageArr[1]);
         }
         deleteloa(loa);
     }
@@ -268,9 +315,6 @@ function parseNoLoA(message, loaUser, type, loa, permissions) {
     loa = checkDate(loa, permissions);
     if (loa.status) {
         loa.date = loa.dateCheck;
-        if (messageArr[1]) {
-            loa.reason = messageArr[1];
-        }
         addloa(loa);
     }
 }
@@ -278,12 +322,16 @@ function parseNoLoA(message, loaUser, type, loa, permissions) {
 function addloa(loaObj) {
     var sql = "SELECT * FROM loas WHERE discordid = '" + loaObj.discordId + "' AND date = DATE('" + moment(loaObj.date).format('YYYY-MM-DD') + "')";
     connection.query(sql, function(error, results, fields) {
+        console.log('inside sql 1: ');
+        console.log(loaObj);
         if (error) {
             sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
         } else {
             if (results.length > 0) {
-                sendDiscordMessage(loachannel, "You've already got an LoA for this date.  You can delete an LoA with !LoADelete or change an LoA with !LoAUpdate.  For more information about commands, type !LoAHelp");
+                sendDiscordMessage(loachannel, "An LoA already exists for <@" + loaObj.discordId + "> on " + moment(loaObj.date).format('dddd, MM/DD/YY') + ".  For more information about commands, type !LoAHelp");
             } else {
+                console.log('inside sql 2: ');
+                console.log(loaObj);
                 var sql = "INSERT INTO loas (discordid, discordusername, reason, date, type) VALUES ('" + loaObj.discordId + "', '" + loaObj.discordUsername + "', '" + loaObj.reason + "', '" + moment(loaObj.date).format('YYYY-MM-DD') + "', '" + loaObj.type + "')";
                 connection.query(sql, function(error, results, fields) {
                     if (error) {
@@ -373,7 +421,7 @@ function listLoAsForDate(message) {
     var messageContent = message.content.toLowerCase().replace('!loalistfordate ', '');
     if (Date.parse(messageContent) || messageContent.replace(/\s/g, "").toLowerCase() == 'today') {
         messageContent = parseDateTodayAndYear(messageContent);
-        var sql = "SELECT * FROM loas WHERE date = DATE('" + moment(new Date(messageContent).toISOString()).format('YYYY-MM-DD') + "')";
+        var sql = "SELECT * FROM loas WHERE date = DATE('" + moment(messageContent).format('YYYY-MM-DD') + "' order by type asc)";
         connection.query(sql, function(error, results, fields) {
             if (error) {
                 sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
@@ -382,9 +430,14 @@ function listLoAsForDate(message) {
                     var strMessage = 'Active LoAs found for ' + moment(messageContent).format('dddd, MM/DD/YY') + '\n';
                     for (var i = 0; i < results.length; i++) {
                         strMessage += results[i].discordusername;
-                        if(results[i].reason){
-                        	strMessage += ', ' + results[i].reason + '\n';
-                        } 
+                        if (results[i].type !== 'normal') {
+                            strMessage += ', ' + results[i].type;
+                        }
+                        if (results[i].reason) {
+                            strMessage += ', ' + mysql_real_escape_string(results[i].reason) + '\n';
+                        } else {
+                            strMessage += '\n';
+                        }
                     }
                     sendDiscordMessage(loachannel, strMessage);
                 } else {
@@ -395,7 +448,70 @@ function listLoAsForDate(message) {
     } else {
         sendDiscordMessage(loachannel, "Unable to parse a date for the LoA requested. Please sure you're entering a valid date value.");
     }
+}
 
+function loot(url, permissions) {
+    request.get(url, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            csv.parse(body, function(error, body) {
+                if (!error) {
+                    console.log(body.length);
+                    sendDiscordMessage('Preparing to parse ' + body.length + ' items');
+
+                    //check to see if first entry is parsing data
+                    var i = 0;
+                    if (body[0][0].toLowerCase() == 'player' && body[0][1].toLowerCase() == ' date') {
+                        i = 1;
+                    }
+
+                    for (i; i < body.length; i++) {
+                        console.log(body[i]);
+                        if (checkIfLootItemExists(body[i])) {
+                            //if true, add to db
+                            addLootItem(body[i]);
+                        }
+                    }
+                } else {
+                    sendDiscordMessage('An error occurred while parsing the CSV data.  Message returned from parser: ' + error + ' <@105094681141977088>');
+                }
+            });
+        } else {
+            sendDiscordMessage('An error occurred while retrieving the file from the Discord servers.  Message returned from request: ' + error + ' <@105094681141977088>');
+        }
+    });
+}
+
+function checkIfLootItemExists(lootItem) {
+    //lootItem is an 1 indivudal loot item, as an array of values
+    //returns true if the item does not exist already in the database table
+    //returns flase if it already exists
+
+    console.log(lootItem[0]);
+    //returns the player name
+    var sql = "SELECT * FROM loot_history WHERE date = " + moment(lootItem[1]).format('YYYY-MM-DD') + " AND time = '" + lootItem[2] + ;
+    connection.query(sql, function(error, results, fields) {
+        if (error) {
+            sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
+        } else {
+            if (results.length > 0) {
+                var strMessage = 'Active LoAs found for ' + moment(messageContent).format('dddd, MM/DD/YY') + '\n';
+                for (var i = 0; i < results.length; i++) {
+                    strMessage += results[i].discordusername;
+                    if (results[i].reason) {
+                        strMessage += ', ' + mysql_real_escape_string(results[i].reason) + '\n';
+                    }
+                }
+                sendDiscordMessage(loachannel, strMessage);
+            } else {
+                sendDiscordMessage(loachannel, 'There are no active LoAs for ' + moment(new Date(messageContent).toISOString()).format('dddd, MM/DD/YY') + '.');
+            }
+        }
+    });
+}
+
+function addLootItem(lootItem) {
+    //lootItem is an 1 indivudal loot item, as an array of values
+    //adds an entry to the loot table
 }
 
 function sendDiscordMessage(channelId, message) {
