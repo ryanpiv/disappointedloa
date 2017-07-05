@@ -1,7 +1,7 @@
 // Code goes here
 
 (function() {
-    var app = angular.module("Disappointed", ['ui.grid', 'ui.grid.pagination', 'ui.grid.selection']);
+    var app = angular.module("Disappointed", ['ui.grid', 'ui.grid.pagination', 'ui.grid.selection', 'ui.grid.autoResize']);
 
     var MainController = function(
         $scope,
@@ -12,14 +12,15 @@
         //<a href="http://ptr.wowhead.com/item=49286"></a>
         $scope.gridColumns = [
             { field: 'player', name: 'Player' },
-            { field: 'date', name: 'Date' }, {
+            { field: 'date', name: 'Date Acquired (EST)' }, {
                 field: 'item',
                 name: 'Item',
-                cellTemplate: '<div class="ui-grid-cell-contents"><a href="http://wowhead.com/item={{ grid.appScope.returnItemId(grid, row) }}">{{ grid.appScope.returnItem(grid,row) }}</a></div>'
+                cellTemplate: '<div class="ui-grid-cell-contents"><a target="_blank" href="http://wowhead.com/item={{ grid.appScope.returnItemId(grid, row) }}">{{ grid.appScope.returnItem(grid,row) }}</a></div>'
             },
             { field: 'votes', name: 'Votes' },
             { field: 'boss', name: 'Boss' },
-            { field: 'instance', name: 'Instance' }
+            { field: 'instance', name: 'Instance' },
+            { field: 'dateCreated', name: 'Date Added (UTC)' }
         ];
 
         $scope.returnItemId = function(grid, row) {

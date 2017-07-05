@@ -12,11 +12,11 @@ moment.tz.setDefault('America/New_York');
 const Events = Discordie.Events;
 const client = new Discordie();
 
-var loachannel = '237085726208950272'; //real channel
-//var loachannel = '266749722692288512'; //test channel
+//var loachannel = '237085726208950272'; //real channel
+var loachannel = '266749722692288512'; //test channel
 
-//var token = 'MzAwODEwOTE1NTg0OTMzODg4.DDvm1Q.04nE8k-QhSUves4P61-xtEGQYqA'; //test channel
-var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
+var token = 'MzAwODEwOTE1NTg0OTMzODg4.DDvm1Q.04nE8k-QhSUves4P61-xtEGQYqA'; //test channel
+//var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
 
 var connection = mysql.createConnection({
     host: 'mysql4.gear.host',
@@ -481,11 +481,12 @@ function checkIfLootItemExists(lootArray) {
     async.each(lootArray, function(lootItem, callback) {
         // Perform operation on file here.
         //console.log('Processing file ' + lootItem);
-        var sql = "SELECT * FROM loot_history WHERE date=DATE('" + moment(lootItem[1], 'dd/mm/yy').format('YYYY-MM-DD') + "') AND time=TIME('" + lootItem[2] + "') AND itemId = " + lootItem[4];
+        var sql = "SELECT * FROM loot_history WHERE date='" + moment(lootItem[1], 'DD/MM/YY').format('YYYY-MM-DD') + " " + lootItem[2] + "' AND itemId = " + lootItem[4];
         //console.log('sql: ' + sql);
         connection.query(sql, function(error, results, fields) {
             if (error) {
                 sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
+                console.log(sql);
                 return false;
             } else {
                 if (results.length > 0) {
@@ -514,7 +515,7 @@ function addLootItem(lootItem, done) {
     //lootItem is an 1 indivudal loot item, as an array of values
     //adds an entry to the loot table
     //returns the player name
-    var sql = "INSERT INTO loot_history VALUES(DEFAULT,'" + mysql_real_escape_string(lootItem[0]) + "', DATE('" + moment(lootItem[1], 'dd/mm/yy').format('YYYY-MM-DD') + "'), TIME('" + mysql_real_escape_string(lootItem[2]) + "'), '" + mysql_real_escape_string(lootItem[3]) + "'," + mysql_real_escape_string(lootItem[4]) + ",'" + mysql_real_escape_string(lootItem[5]) + "','" + mysql_real_escape_string(lootItem[6]) + "'," + mysql_real_escape_string(lootItem[7]) + ",'" + mysql_real_escape_string(lootItem[8]) + "','" + mysql_real_escape_string(lootItem[9]) + "','" + mysql_real_escape_string(lootItem[10]) + "','" + mysql_real_escape_string(lootItem[11]) + "','" + mysql_real_escape_string(lootItem[12]) + "','" + mysql_real_escape_string(lootItem[13]) + "','" + mysql_real_escape_string(lootItem[14]) + "', NOW(), NOW())";
+    var sql = "INSERT INTO loot_history VALUES(DEFAULT,'" + mysql_real_escape_string(lootItem[0]) + "', '" + moment(lootItem[1], "DD/MM/YY").format('YYYY-MM-DD') + " " + mysql_real_escape_string(lootItem[2]) + "', '" + mysql_real_escape_string(lootItem[3]) + "'," + mysql_real_escape_string(lootItem[4]) + ",'" + mysql_real_escape_string(lootItem[5]) + "','" + mysql_real_escape_string(lootItem[6]) + "'," + mysql_real_escape_string(lootItem[7]) + ",'" + mysql_real_escape_string(lootItem[8]) + "','" + mysql_real_escape_string(lootItem[9]) + "','" + mysql_real_escape_string(lootItem[10]) + "','" + mysql_real_escape_string(lootItem[11]) + "','" + mysql_real_escape_string(lootItem[12]) + "','" + mysql_real_escape_string(lootItem[13]) + "','" + mysql_real_escape_string(lootItem[14]) + "', NOW(), NOW())";
     connection.query(sql, function(error, results, fields) {
         if (error) {
             sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
