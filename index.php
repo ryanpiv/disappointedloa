@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html ng-app="Disappointed">
 <head>
   <?php include 'settings.php';?>
@@ -36,12 +36,12 @@
 <div class="container-fluid">
 	<section id="lootHistory" style="padding-top: 50px">
 		<h1 class="page-header">Loot History</h1>
-		<div ui-grid="gridPagedLoot" id="gridPagedLoot1" ui-grid-pagination ui-grid-selection ui-grid-auto-resize class="grid">
+		<div ui-grid="gridPagedLoot" id="gridPagedLoot1" ui-grid-pagination ui-grid-selection ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns class="grid">
 		</div>
 	</section>
 	<section id="loas">
 		<h1 class="page-header">Leave of Absences</h1>
-		<div ui-grid="gridPagedLoas" id="gridPagedLoas" ui-grid-pagination ui-grid-selection ui-grid-auto-resize class="grid">
+		<div ui-grid="gridPagedLoas" id="gridPagedLoas" ui-grid-pagination ui-grid-selection ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns class="grid">
 		</div>
 	</section>
 </div>
