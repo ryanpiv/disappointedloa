@@ -37,8 +37,11 @@
             { field: 'dateCreated', name: 'Date Added (UTC)' }
         ];
         $scope.gridColumns2 = [
-            { field: 'discordusername', name: 'Discord Username' },
-            { field: 'date', name: 'Date Entered' },
+            { field: 'discordusername', name: 'Discord Username' }, {
+                field: 'date',
+                name: 'Date Entered',
+                sort: { direction: uiGridConstants.DESC }
+            },
             { field: 'type', name: 'Type' },
             { field: 'reason', name: 'Reason' },
             { field: 'dateModified', name: 'Date Last Changed' }
