@@ -13,9 +13,23 @@
                     return response.data;
                 });
         };
+        var getPagedLoas = function(paginationOptions) {
+            return $http.get("js/data/get-paged-loas.php?pageNum=" + paginationOptions.pageNumber + "&pageSize=" + paginationOptions.pageSize + "&sort=" + paginationOptions.sort + "&sortCol=" + paginationOptions.sortCol)
+                .then(function(response) {
+                    return response.data;
+                });
+        };
+        var getTotalLoas = function() {
+            return $http.get("js/data/get-total-loas.php?")
+                .then(function(response) {
+                    return response.data;
+                });
+        };
         return {
             getPagedLoot: getPagedLoot,
-            getTotalRecords: getTotalRecords
+            getTotalRecords: getTotalRecords,
+            getPagedLoas: getPagedLoas,
+            getTotalLoas: getTotalLoas
         };
     }
 

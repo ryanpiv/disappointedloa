@@ -9,7 +9,7 @@
   </style>
  </head>
 <body ng-controller="MainController" data-ng-init="init()">
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -27,20 +27,21 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
-        <li class="active"><a target="_blank" href="lootHistory">Loot History <span class="sr-only">(current)</span></a></li>
-        <li><a href="loas">LoAs</a></li>
+        <li><a href="#lootHistory">Loot History</a></li>
+        <li><a href="#loas">LoAs</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 <div class="container-fluid">
-	<section id="lootHistory">
+	<section id="lootHistory" style="padding-top: 50px">
 		<h1 class="page-header">Loot History</h1>
 		<div ui-grid="gridPagedLoot" id="gridPagedLoot1" ui-grid-pagination ui-grid-selection ui-grid-auto-resize class="grid">
 		</div>
 	</section>
 	<section id="loas">
 		<h1 class="page-header">Leave of Absences</h1>
+		<div ui-grid="gridPagedLoas" id="gridPagedLoas" ui-grid-pagination ui-grid-selection ui-grid-auto-resize class="grid">
 		</div>
 	</section>
 </div>
