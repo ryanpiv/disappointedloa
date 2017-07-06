@@ -6,6 +6,9 @@
   	.grid{
   		height:600px;
   	}
+    section{
+      padding-bottom: 100px;
+    }
   </style>
  </head>
 <body ng-controller="MainController" data-ng-init="init()">
@@ -27,21 +30,55 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
-        <li><a href="#lootHistory">Loot History</a></li>
-        <li><a href="#loas">LoAs</a></li>
+        <li><a href="#lootHistoryAnalytics">Loot History Analytics</a></li>
+        <li><a href="#lootHistoryGrid">Loot History Grid</a></li>
+        <li><a href="#loaAnalytics">LoA Analytics</a></li>
+        <li><a href="#loaGrid">LoA Grid</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 <div class="container-fluid">
-	<section id="lootHistory" style="padding-top: 50px">
-		<h1 class="page-header">Loot History</h1>
-		<div ui-grid="gridPagedLoot" id="gridPagedLoot1" ui-grid-pagination ui-grid-selection ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns class="grid">
-		</div>
+	<section id="lootHistoryAnalytics" style="padding-top: 50px">
+    <h1 class="page-header">Loot History Analytics</h1>
+
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <canvas id="myChart"></canvas>
+      </div>
+      <!-- <div class="col-lg-4">
+        <canvas id="myPieChart"></canvas>
+      </div> -->
+    </div>
+
 	</section>
-	<section id="loas">
-		<h1 class="page-header">Leave of Absences</h1>
-		<div ui-grid="gridPagedLoas" id="gridPagedLoas" ui-grid-pagination ui-grid-selection ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns class="grid">
+
+  <section id="lootHistoryGrid">
+    <h1 class="page-header">Loot History Grid</h1>
+    <div class="row">
+      <div class="col-md-12">
+        <div ui-grid="gridPagedLoot" id="gridPagedLoot1" ui-grid-pagination ui-grid-selection ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns class="grid">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="loaAnalytics">
+    <h1 class="page-header">Leave of Absense Analytics</h1>
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <canvas id="myLoaChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+	<section id="loaGrid">
+		<h1 class="page-header">Leave of Absence Grid</h1>
+    <div class="row">
+      <div class="col-md-12">
+        <div ui-grid="gridPagedLoas" id="gridPagedLoas" ui-grid-pagination ui-grid-selection ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns class="grid">
+        </div>
+      </div>
 		</div>
 	</section>
 </div>
