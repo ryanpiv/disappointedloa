@@ -13,4 +13,4 @@
 <link rel="styleSheet" href="js/lib/ui-grid.info-gh-pages/release/ui-grid.min.css"/>
 <script src="js/lib/ui-grid.info-gh-pages/release/ui-grid.min.js"></script>
 
-<script type="text/javascript" src="//wow.zamimg.com/widgets/power.js"></script><script>var wowhead_tooltips = { "colorlinks": true, "iconizelinks": true, "renamelinks": true }</script>
+<script type="text/javascript" src="//wow.zamimg.com/widgets/power.js"></script><script>var wowhead_tooltips = { }</script>
