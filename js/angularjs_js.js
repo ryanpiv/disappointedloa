@@ -1,7 +1,7 @@
 // Code goes here
 
 (function() {
-    var app = angular.module("Disappointed", ['ui.grid', 'ui.grid.pagination', 'ui.grid.selection', 'ui.grid.autoResize']);
+    var app = angular.module("Disappointed", ['ui.grid', 'ui.grid.pagination', 'ui.grid.selection', 'ui.grid.autoResize', 'ui.grid.resizeColumns', 'ui.grid.moveColumns']);
 
     var MainController = function(
         $scope,
@@ -20,7 +20,7 @@
                 name: 'Item',
                 cellTemplate: '<div class="ui-grid-cell-contents"><a target="_blank" href="http://wowhead.com/item={{ grid.appScope.returnItemId(grid, row) }}">{{ grid.appScope.returnItem(grid,row) }}</a></div>'
             },
-            { field: 'votes', name: 'Votes' },
+            { field: 'votes', name: 'Votes', width: 80 },
             { field: 'boss', name: 'Boss' }, {
                 field: 'instance',
                 name: 'Instance',
@@ -33,7 +33,7 @@
                     ]
                 }
             },
-            { field: 'response', name: 'Response' },
+            { field: 'response', name: 'Response', width: 120 },
             { field: 'dateCreated', name: 'Date Added (UTC)' }
         ];
         $scope.gridColumns2 = [
