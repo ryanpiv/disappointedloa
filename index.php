@@ -6,10 +6,11 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Disappointed Analytics" />
   <meta property="og:description" content="Analyics for Disappointed, US, Zul jin" />
-  <meta property="og:image" content="http://disappointed.gear.host/disappointed_avatar.png" />
-  <meta property="og:image:secure_url" content="https://disappointed.gear.host/disappointed_avatar.png" />
+  <meta property="og:image" content="http://disappointedloa.gear.host/disappointed_avatar.png" />
+  <meta property="og:image:secure_url" content="https://disappointedloa.gear.host/disappointed_avatar.png" />
   <meta property="og:image:width" content="240" />
   <meta property="og:image:height" content="240" />
+  <meta property="og:url" content="http://www.disappointedloa.gear.host" />
   <?php include 'settings.php';?>
   <style>
   	.grid{
