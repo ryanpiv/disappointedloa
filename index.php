@@ -89,5 +89,26 @@
 	</section>
 </div>
 
+<script>
+  $('a[href^="#"]').on('click', function(e) {
+      e.preventDefault();
+      $(document).off("scroll");
+
+      /*$('a').each(function () {
+          $(this).removeClass('my-active');
+      })
+      $(this).addClass('my-active');*/
+
+      var target = this.hash;
+      $target = $(target);
+      $('html, body').stop().animate({
+          'scrollTop': $target.offset().top
+      }, 500, 'swing', function() {
+          window.location.hash = target;
+          //$(document).on("scroll", onScroll);
+      });
+  });
+</script>
+
 </body>
 </html>
