@@ -8,7 +8,7 @@ $db = "disappointedloa";
 $con = mysqli_connect($hostname, $username, $password, $db);
 
 //query to see if game already exists
-$sql = "SELECT player, count(*) as num FROM disappointedloa.loot_history where response <> 'OS' OR response <> 'Pass' OR response <> 'xmog' group by player order by num desc";
+$sql = "SELECT player, count(*) as num FROM disappointedloa.loot_history where response <> 'OS' AND response <> 'Pass' AND response <> 'xmog' group by player order by num desc";
 $result = $con->query($sql);
 
 try {
