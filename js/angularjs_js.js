@@ -56,15 +56,15 @@
 
         var paginationOptions = {
             pageNumber: 1,
-            pageSize: 10,
-            sort: null,
-            sortCol: null
+            pageSize: 25,
+            sort: 'desc',
+            sortCol: 'date'
         };
         var paginationOptions2 = {
             pageNumber: 1,
-            pageSize: 10,
-            sort: null,
-            sortCol: null
+            pageSize: 25,
+            sort: 'desc',
+            sortCol: 'date'
         };
 
         $scope.init = function() {
@@ -75,7 +75,7 @@
                 enablePaginationControls: true,
                 paginationPageSize: paginationOptions.pageSize,
                 totalItems: dataGet.getTotalRecords().then(onTotalRecordsComplete, onError),
-                paginationPageSizes: [10, 25, 50],
+                paginationPageSizes: [10, 25, 50, 100],
                 useExternalPagination: true,
                 enableRowSelection: true,
                 enableRowHeaderSelection: false,
@@ -115,7 +115,7 @@
                 enablePaginationControls: true,
                 paginationPageSize: paginationOptions2.pageSize,
                 totalItems: dataGet.getTotalLoas().then(onTotalRecordsComplete2, onError),
-                paginationPageSizes: [10, 25, 50],
+                paginationPageSizes: [10, 25, 50, 100],
                 useExternalPagination: true,
                 enableRowSelection: true,
                 enableRowHeaderSelection: false,
