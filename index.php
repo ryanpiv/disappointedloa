@@ -46,9 +46,15 @@
       <div class="col-md-8 col-md-offset-2">
         <canvas id="myChart"></canvas>
       </div>
-      <!-- <div class="col-lg-4">
-        <canvas id="myPieChart"></canvas>
-      </div> -->
+      <div class="col-md-4">
+        <canvas id="lootByClassChart"></canvas>
+      </div>
+      <div class="col-md-4">
+        <canvas id="lootByResponseChart"></canvas>
+      </div>
+      <div class="col-md-4">
+        <canvas id="lootByTosDifficultyChart"></canvas>
+      </div>
     </div>
 
 	</section>
