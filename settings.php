@@ -1,3 +1,12 @@
+<link rel="shortcut icon" href="favicon.ico" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Disappointed Analytics" />
+<meta property="og:description" content="Analyics for Disappointed, US-Zul'jin" />
+<meta property="og:image" content="http://disappointed.gear.host/media/banner.png" />
+<meta property="og:image:secure_url" content="https://disappointed.gear.host/disappointed_avatar.png" />
+<meta property="og:image:width" content="240" />
+<meta property="og:image:height" content="240" />
+
 <script src="https://code.jquery.com/jquery.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 
