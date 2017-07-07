@@ -12,11 +12,11 @@ moment.tz.setDefault('America/New_York');
 const Events = Discordie.Events;
 const client = new Discordie();
 
-//var loachannel = '237085726208950272'; //real channel
-var loachannel = '266749722692288512'; //test channel
+var loachannel = '237085726208950272'; //real channel
+//var loachannel = '266749722692288512'; //test channel
 
-var token = 'MzAwODEwOTE1NTg0OTMzODg4.DDvm1Q.04nE8k-QhSUves4P61-xtEGQYqA'; //test channel
-//var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
+//var token = 'MzAwODEwOTE1NTg0OTMzODg4.DDvm1Q.04nE8k-QhSUves4P61-xtEGQYqA'; //test channel
+var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
 
 var connection = mysql.createConnection({
     host: 'mysql4.gear.host',
@@ -156,6 +156,27 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                         sendDiscordMessage(loachannel, 'This command is restricted to those with Administrator access only.');
                     }
                     break;
+                case '!clearmessages':
+                    console.log('clear messages executing');
+                    if (permissions.General.ADMINISTRATOR == true) {
+                        if (whitespace == '') {
+                            e.message.channel.sendMessage('Please send a value between 1 and 100 for the amount of messages to clear.');
+                        } else {
+                            if (parseInt(whitespace)) {
+                                if (whitespace > 0 && whitespace < 101) {
+                                    console.log('Clearing last ' + whitespace + ' messages...');
+                                    clearMessages(whitespace);
+                                } else {
+                                    e.message.channel.sendMessage('Please send a numerical value for the amount of messages to delete, between the values of 1 and 100.');
+                                }
+                            } else {
+                                e.message.channel.sendMessage('Please send a numerical value for the amount of messages to delete, between the values of 1 and 100.');
+                            }
+                        }
+                    } else {
+                        sendDiscordMessage(loachannel, 'This command is restricted to those with Administrator access only.');
+                        break;
+                    }
                 default:
                     console.log('default executing');
                     sendDiscordMessage(loachannel, "I couldn't understand that command.  Type !LoAHelp to get a message about everything I can do.");
@@ -523,6 +544,16 @@ function addLootItem(lootItem, done) {
         } else {
             done();
         }
+    });
+}
+
+function clearMessages(amount) {
+    client.Channels.get(loachannel).fetchMessages(amount).then(() => {
+        var messages = client.Channels.get(loachannel).messages;
+        client.Messages.deleteMessages(messages, loachannel);
+        console.log('Messages cleared.');
+    }).catch((err) => {
+        sendDiscordMessage(loachannel, err);
     });
 }
 
