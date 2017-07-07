@@ -52,7 +52,7 @@
       <div class="col-md-4">
         <canvas id="lootByResponseChart"></canvas>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-4"t>
         <canvas id="lootByTosDifficultyChart"></canvas>
       </div>
     </div>
