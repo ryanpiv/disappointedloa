@@ -359,7 +359,100 @@ $(document).ready(function() {
         });
     });
 
-    //raidersByClass
+    //lootTosTierTokenDistribution
+    // ***** Tier Token drops by All and every difficulty for all responses and raiders *****
+    var lootTosTierTokenDistribution = $('#lootTosTierTokenDistribution');
+    var lootTosTierTokenDistributionChart = new Chart(lootTosTierTokenDistribution, {
+        type: 'bar',
+        responsive: true,
+        data: {
+            labels: ['Vanquisher', 'Conqueror', 'Protector'],
+            datasets: [{
+                label: 'All',
+                backgroundColor: 'rgba(149, 165, 166,1.0)',
+                borderColor: 'rgba(149, 165, 166,1.0)',
+                data: []
+            }, {
+                label: 'Normal',
+                backgroundColor: 'rgba(241, 196, 15,1.0)',
+                borderColor: 'rgba(241, 196, 15,1.0)',
+                data: []
+            }, {
+                label: 'Heroic',
+                backgroundColor: 'rgba(230, 126, 34,1.0)',
+                borderColor: 'rgba(230, 126, 34,1.0)',
+                data: []
+            }, {
+                label: 'Mythic',
+                backgroundColor: 'rgba(231, 76, 60,1.0)',
+                borderColor: 'rgba(231, 76, 60,1.0)',
+                data: []
+            }],
+            borderWidth: 1
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Tier Token drops by all and every difficulty for all responses and raider statuses'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        stepSize: 5
+                    }
+                }]
+            }
+        }
+    });
+    $.ajax({
+        method: "GET",
+        url: "js/data/get-tokens-all.php"
+    }).done(function(data) {
+        var tokensCount = sortTierArray(data);
+        lootTosTierTokenDistributionChart.data.datasets[0].data = tokensCount;
+        lootTosTierTokenDistributionChart.update();
+    });
+    $.ajax({
+        method: "GET",
+        url: "js/data/get-tokens-normal.php"
+    }).done(function(data) {
+        var tokensCount = sortTierArray(data);
+        lootTosTierTokenDistributionChart.data.datasets[1].data = tokensCount;
+        lootTosTierTokenDistributionChart.update();
+    });
+    $.ajax({
+        method: "GET",
+        url: "js/data/get-tokens-heroic.php"
+    }).done(function(data) {
+        var tokensCount = sortTierArray(data);
+        lootTosTierTokenDistributionChart.data.datasets[2].data = tokensCount;
+        lootTosTierTokenDistributionChart.update();
+    });
+    $.ajax({
+        method: "GET",
+        url: "js/data/get-tokens-mythic.php"
+    }).done(function(data) {
+        var tokensCount = sortTierArray(data);
+        lootTosTierTokenDistributionChart.data.datasets[3].data = tokensCount;
+        lootTosTierTokenDistributionChart.update();
+    });
+
+    function sortTierArray(tierArray) {
+        var newArray = [];
+        for (var i = 0; i < tierArray.length; i++) {
+            if (tierArray[i].item.toLowerCase().includes('vanquisher')) {
+                newArray[0] = tierArray[i].num;
+            } else if (tierArray[i].item.toLowerCase().includes('conqueror')) {
+                newArray[1] = tierArray[i].num;
+            } else if (tierArray[i].item.toLowerCase().includes('protector')) {
+                newArray[2] = tierArray[i].num;
+            }
+        }
+        return newArray;
+    }
+
+
     // ***** Raider distribution by class *****
     var raidersByClass = $('#raidersByClass');
     var raidersByClassPieChart = new Chart(raidersByClass, {
@@ -410,7 +503,6 @@ $(document).ready(function() {
         raidersByClassPieChart.data.datasets[0].borderColor = bg_colors;
         raidersByClassPieChart.update();
     });
-
 });
 
 function generateRandomColor() {

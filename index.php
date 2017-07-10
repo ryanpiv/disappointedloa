@@ -84,6 +84,11 @@
         <canvas id="lootTosTierByDifficulty"></canvas>
       </div>
     </div>
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2"t>
+        <canvas id="lootTosTierTokenDistribution"></canvas>
+      </div>
+    </div>
 
 	</section>
 
