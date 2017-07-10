@@ -1,4 +1,8 @@
 $(document).ready(function() {
+    $('section').css('display', 'none');
+    Pace.on('done', function() {
+        $('section').css('display', 'block');
+    });
     var ctx = $("#myChart");
     var lootHistoryBarChart = new Chart(ctx, {
         type: 'bar',
@@ -211,6 +215,13 @@ $(document).ready(function() {
             title: {
                 display: true,
                 text: 'Tier distribution betweer players on all difficulties for all response types'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
             }
         }
     });

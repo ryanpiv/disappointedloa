@@ -48,7 +48,7 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
-<div class="container-fluid">
+<div class="container-fluid" id="MainContainer">
 	<section id="lootHistoryAnalytics" style="padding-top: 50px">
     <h1 class="page-header">Loot History Analytics</h1>
 
