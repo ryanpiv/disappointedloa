@@ -21,4 +21,5 @@
 
 <script src="charts.js"></script>
 <script src="pace.js"></script>
-<link href="center-radar.css" rel="stylesheet" />
+<!-- <link href="center-radar.css" rel="stylesheet" /> -->
+<link href="flat-top.css" rel="stylesheet" />

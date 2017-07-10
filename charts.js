@@ -1,8 +1,4 @@
 $(document).ready(function() {
-    $('section').css('display', 'none');
-    Pace.on('done', function() {
-        $('section').css('display', 'block');
-    });
     var ctx = $("#myChart");
     var lootHistoryBarChart = new Chart(ctx, {
         type: 'bar',
