@@ -202,7 +202,7 @@ $(document).ready(function() {
         data: {
             labels: [],
             datasets: [{
-                label: '# of Votes',
+                label: 'Tier pieces given',
                 data: []
             }],
             borderWidth: 1
@@ -420,7 +420,7 @@ var largeBackgroundColorArray = [
 
 var classColors = [
     'rgba(231, 76, 60,0.5)', //dk
-    'rgba(142, 68, 173,0.5)', //dh
+    'rgba(155, 89, 182,0.5)', //dh
     'rgba(230, 126, 34,0.5)', //druid
     'rgba(39, 174, 96,0.5)', //hunter
     'rgba(60, 177, 255,0.5)', //mage
@@ -429,6 +429,7 @@ var classColors = [
     'rgba(189, 195, 199,0.5)', //priest
     'rgba(241, 196, 15,0.5)', //rogue
     'rgba(31, 114, 168,0.5)', //shaman
+    'rgba(142, 68, 173,0.6)', //warlock
     'rgba(132,117,69,0.5)' //warrior
 ];
 
@@ -464,8 +465,11 @@ function colorByClass(className) {
         case 'shaman':
             return classColors[9];
             break;
-        case 'warrior':
+        case 'warlock':
             return classColors[10];
+            break;
+        case 'warrior':
+            return classColors[11];
             break;
         default:
             return 'rgba(44, 62, 80,1.0)';
