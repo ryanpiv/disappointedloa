@@ -170,9 +170,9 @@ $(document).ready(function() {
         data: {
             labels: [],
             datasets: [{
-                backgroundColor: ['rgba(230,126,34 ,0.5)', //orange
-                    'rgba(231,76,60 ,0.5)', //red
-                    'rgba(39,174,96 ,0.5)', //green
+                backgroundColor: ['rgba(230, 126, 34,0.7)', //heroic
+                    'rgba(231, 76, 60,0.7)', //mythic
+                    'rgba(241, 196, 15,0.7)', //normal
                 ],
                 data: []
             }],
@@ -217,7 +217,7 @@ $(document).ready(function() {
             },
             title: {
                 display: true,
-                text: 'Tier distribution betweer players on all difficulties for all response types'
+                text: 'Tier distribution between players on all difficulties for all response types'
             },
             scales: {
                 yAxes: [{
