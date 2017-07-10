@@ -8,21 +8,15 @@ $db = "disappointedloa";
 $con = mysqli_connect($hostname, $username, $password, $db);
 
 //query to see if game already exists
-$sql = "SELECT lh.class, count(lh.class) as classcount from loot_history as lh inner join raiders as r on lh.player = r.player group by lh.class order by lh.class asc";
+$sql = "SELECT count(*) as total FROM raiders";
 $result = $con->query($sql);
 
 try {
 	if (!$result) {
 		print_r("Error: " . $sql . "<br>" . $con->error);
 	} else {
-		$response = array();
-		while ($row = mysqli_fetch_assoc($result)) {
-			$response[] = $row;
-		}
-
-		// save the JSON encoded array
-		$jsonData = json_encode($response);
-		print_r($jsonData);
+		$data = mysqli_fetch_assoc($result);
+		echo ($data['total']);
 	}
 } catch (Exception $e) {
 	die($e);

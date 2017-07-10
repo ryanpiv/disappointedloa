@@ -25,11 +25,25 @@
                     return response.data;
                 });
         };
+        var getPagedRaiders = function(paginationOptions) {
+            return $http.get("js/data/get-paged-raiders.php?pageNum=" + paginationOptions.pageNumber + "&pageSize=" + paginationOptions.pageSize + "&sort=" + paginationOptions.sort + "&sortCol=" + paginationOptions.sortCol)
+                .then(function(response) {
+                    return response.data;
+                });
+        };
+        var getTotalRaiders = function() {
+            return $http.get("js/data/get-total-raiders.php?")
+                .then(function(response) {
+                    return response.data;
+                });
+        };
         return {
             getPagedLoot: getPagedLoot,
             getTotalRecords: getTotalRecords,
             getPagedLoas: getPagedLoas,
-            getTotalLoas: getTotalLoas
+            getTotalLoas: getTotalLoas,
+            getPagedRaiders: getPagedRaiders,
+            getTotalRaiders: getTotalRaiders
         };
     }
 

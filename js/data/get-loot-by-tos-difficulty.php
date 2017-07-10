@@ -8,7 +8,7 @@ $db = "disappointedloa";
 $con = mysqli_connect($hostname, $username, $password, $db);
 
 //query to see if game already exists
-$sql = "SELECT instance, count(instance) as instancecount from loot_history group by instance order by instance asc";
+$sql = "SELECT lh.instance, count(lh.instance) as instancecount from loot_history as lh inner join raiders as r on lh.player = r.player group by lh.instance order by lh.instance asc";
 $result = $con->query($sql);
 
 try {

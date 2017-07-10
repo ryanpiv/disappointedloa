@@ -16,6 +16,10 @@
   	.grid{
   		height:600px;
   	}
+    .row{
+      padding-top:10px;
+      padding-bottom:10px;
+    }
     section{
       padding-bottom: 100px;
     }
@@ -42,6 +46,8 @@
       <ul class="nav navbar-nav">
         <li><a href="#lootHistoryAnalytics">Loot History Analytics</a></li>
         <li><a href="#lootHistoryGrid">Loot History Grid</a></li>
+        <li><a href="#raidersAnalytics">Raiders Analytics</a></li>
+        <li><a href="#raidersGrid">Raiders Grid</a></li>
         <li><a href="#loaAnalytics">LoA Analytics</a></li>
         <li><a href="#loaGrid">LoA Grid</a></li>
       </ul>
@@ -53,9 +59,11 @@
     <h1 class="page-header">Loot History Analytics</h1>
 
     <div class="row">
-      <div class="col-md-8 col-md-offset-2">
+      <div class="col-lg-8 col-lg-offset-2">
         <canvas id="myChart"></canvas>
       </div>
+    </div>
+    <div class="row">
       <div class="col-md-4">
         <canvas id="lootByClassChart"></canvas>
       </div>
@@ -65,13 +73,16 @@
       <div class="col-md-4"t>
         <canvas id="lootByTosDifficultyChart"></canvas>
       </div>
+    </div>
+    <div class="row">
       <div class="col-md-8 col-md-offset-2"t>
         <canvas id="lootTosTierByPlayer"></canvas>
       </div>
-      <div class="col-md-8 col-md-offset-2"t>
+    </div>
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2"t>
         <canvas id="lootTosTierByDifficulty"></canvas>
       </div>
-
     </div>
 
 	</section>
@@ -81,6 +92,25 @@
     <div class="row">
       <div class="col-md-12">
         <div ui-grid="gridPagedLoot" id="gridPagedLoot1" ui-grid-pagination ui-grid-selection ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns class="grid">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="raidersAnalytics">
+    <h1 class="page-header">Raiders Analytics</h1>
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <canvas id="raidersByClass"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section id="raidersGrid">
+    <h1 class="page-header">Raiders Grid</h1>
+    <div class="row">
+      <div class="col-md-12">
+        <div ui-grid="gridPagedRaiders" id="gridPagedRaiders" ui-grid-pagination ui-grid-selection ui-grid-auto-resize ui-grid-resize-columns ui-grid-move-columns class="grid">
         </div>
       </div>
     </div>

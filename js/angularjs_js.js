@@ -46,12 +46,50 @@
             { field: 'reason', name: 'Reason' },
             { field: 'dateModified', name: 'Date Last Changed' }
         ];
+        $scope.gridColumns3 = [
+            { field: 'idraiders', visible: false },
+            { field: 'player', name: 'Player' },
+            { field: 'class', name: 'Class' }, {
+                field: 'role',
+                name: 'Role',
+                filter: {
+                    type: uiGridConstants.filter.SELECT,
+                    selectOptions: [
+                        { value: 'Tank', label: 'Tank' },
+                        { value: 'Healer', label: 'Healer' },
+                        { value: 'Ranged', label: 'Ranged' },
+                        { value: 'Melee', label: 'Melee' }
+                    ]
+                }
+            }, {
+                field: 'status',
+                name: 'IsActive',
+                sort: { direction: uiGridConstants.DESC },
+                cellTemplate: '<div class="ui-grid-cell-contents">{{ grid.appScope.returnIsActive(grid, row) }}</div>',
+                filter: {
+                    type: uiGridConstants.filter.SELECT,
+                    selectOptions: [
+                        { value: '1', label: 'True' },
+                        { value: '0', label: 'False' }
+                    ]
+                }
+            },
+            { field: 'dateModified', name: 'Date Last Changed' },
+            { field: 'dateCreated', name: 'Date Added' }
+        ];
 
         $scope.returnItemId = function(grid, row) {
             return row.entity.itemId;
         };
         $scope.returnItem = function(grid, row) {
             return row.entity.item;
+        };
+        $scope.returnIsActive = function(grid, row) {
+            if (row.entity.status == 1) {
+                return 'True';
+            } else {
+                return 'False';
+            }
         };
 
         var paginationOptions = {
@@ -65,6 +103,12 @@
             pageSize: 25,
             sort: 'desc',
             sortCol: 'date'
+        };
+        var paginationOptions3 = {
+            pageNumber: 1,
+            pageSize: 25,
+            sort: 'desc',
+            sortCol: 'status'
         };
 
         $scope.init = function() {
@@ -149,6 +193,46 @@
                     });
                 }
             };
+            $scope.gridPagedRaiders = {
+                columnDefs: $scope.gridColumns3,
+                enableFiltering: true,
+                enablePaginationControls: true,
+                paginationPageSize: paginationOptions3.pageSize,
+                totalItems: dataGet.getTotalRaiders().then(onTotalRecordsComplete3, onError),
+                paginationPageSizes: [10, 25, 50, 100],
+                useExternalPagination: true,
+                enableRowSelection: true,
+                enableRowHeaderSelection: false,
+                multiSelect: false,
+                data: dataGet.getPagedRaiders(paginationOptions3).then(onPagedGridComplete3, onError),
+                onRegisterApi: function(gridApi) {
+                    $scope.gridApi = gridApi;
+                    $scope.gridApi.core.on.sortChanged($scope, function(grid, sortColumns) {
+                        if (sortColumns.length == 0) {
+                            paginationOptions3.sort = null;
+                        } else {
+                            paginationOptions3.sort = sortColumns[0].sort.direction;
+                            paginationOptions3.sortCol = sortColumns[0].colDef.field;
+                            dataGet.getPagedRaiders(paginationOptions3).then(onPagedGridComplete3, onError);
+                            dataGet.getTotalRecords().then(onTotalRecordsComplete3, onError);
+                        }
+                    });
+                    gridApi.pagination.on.paginationChanged($scope, function(newPage, pageSize) {
+                        paginationOptions3.pageNumber = newPage;
+                        paginationOptions3.pageSize = pageSize;
+                        dataGet.getPagedRaiders(paginationOptions3).then(onPagedGridComplete3, onError);
+                        dataGet.getTotalRaiders().then(onTotalRecordsComplete3, onError);
+                    });
+                    /*gridApi.edit.on.afterCellEdit($scope, function(rowEntity, colDef, newValue, oldValue) {
+                        $log.info('edited row id:' + rowEntity.id + ' Column:' + colDef.name + ' newValue:' + newValue + ' oldValue:' + oldValue);
+                        $scope.$apply();
+                    });*/
+                    gridApi.selection.on.rowSelectionChanged($scope, function(row) {
+                        //fillGameData([row.entity]);
+                        //activateEditMode(row.entity.game_formal_name);
+                    });
+                }
+            };
         };
 
         var onPagedGridComplete = function(data) {
@@ -163,6 +247,12 @@
         var onTotalRecordsComplete2 = function(data) {
             $scope.gridPagedLoas.totalItems = parseInt(data);
         };
+        var onPagedGridComplete3 = function(data) {
+            $scope.gridPagedRaiders.data = data;
+        };
+        var onTotalRecordsComplete3 = function(data) {
+            $scope.gridPagedRaiders.totalItems = parseInt(data);
+        };
 
         $scope.getTotalRecords = function() {
             dataGet.getTotalRecords().then(onTotalRecordsComplete, onError);
@@ -175,6 +265,12 @@
         };
         $scope.getPagedLoas = function(pageNumber, pageSize) {
             dataGet.getPagedLoas(pageNumber, pageSize).then(onPagedGridComplete2, onError);
+        };
+        $scope.getTotalRaiders = function() {
+            dataGet.getTotalRaiders().then(onTotalRecordsComplete3, onError);
+        };
+        $scope.getPagedRaiders = function(pageNumber, pageSize) {
+            dataGet.getPagedRaiders(pageNumber, pageSize).then(onPagedGridComplete3, onError);
         };
 
         var onError = function(reason) {

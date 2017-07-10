@@ -2,15 +2,20 @@ $(document).ready(function() {
     var ctx = $("#myChart");
     var lootHistoryBarChart = new Chart(ctx, {
         type: 'bar',
-        //responsive: true,
+        responsive: true,
         data: {
-            //labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
             datasets: [{
-                label: 'Players who received items not equal to xmog, OS or Pass',
                 borderWidth: 1
             }]
         },
         options: {
+            legend: {
+                display: false
+            },
+            title: {
+                display: true,
+                text: 'Players who received items not equal to xmog, OS or Pass'
+            },
             scales: {
                 yAxes: [{
                     ticks: {
@@ -42,9 +47,8 @@ $(document).ready(function() {
     var ctx_loa = $("#myLoaChart");
     var loaHistoryBarChart = new Chart(ctx_loa, {
         type: 'bar',
-        //responsive: true,
+        responsive: true,
         data: {
-            //labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
             datasets: [{
                 backgroundColor: largeBackgroundColorArray,
                 borderColor: [
@@ -62,6 +66,9 @@ $(document).ready(function() {
             title: {
                 display: true,
                 text: '# of Normal or NoLoA LoAs'
+            },
+            legend: {
+                display: false
             },
             scales: {
                 yAxes: [{
@@ -94,7 +101,6 @@ $(document).ready(function() {
         data: {
             labels: [],
             datasets: [{
-                label: '# of Votes',
                 backgroundColor: classColors,
                 data: []
             }],
@@ -129,7 +135,6 @@ $(document).ready(function() {
         data: {
             labels: [],
             datasets: [{
-                label: '# of Votes',
                 backgroundColor: classColors,
                 data: []
             }],
@@ -157,6 +162,7 @@ $(document).ready(function() {
         lootByResponsePieChart.update();
     });
 
+    // ***** Loot distribution by the current raid *****
     var lootByTosDifficultyChart = $('#lootByTosDifficultyChart');
     var lootByTosDifficultyPieChart = new Chart(lootByTosDifficultyChart, {
         type: 'pie',
@@ -164,7 +170,6 @@ $(document).ready(function() {
         data: {
             labels: [],
             datasets: [{
-                label: '# of Votes',
                 backgroundColor: ['rgba(230,126,34 ,0.5)', //orange
                     'rgba(231,76,60 ,0.5)', //red
                     'rgba(39,174,96 ,0.5)', //green
@@ -195,19 +200,21 @@ $(document).ready(function() {
         lootByTosDifficultyPieChart.update();
     });
 
+    // ***** Players who have received tier *****
     var lootTosTierByPlayer = $("#lootTosTierByPlayer");
     var lootTosTierByPlayerPieChart = new Chart(lootTosTierByPlayer, {
         type: 'bar',
         responsive: true,
         data: {
-            labels: [],
             datasets: [{
-                label: 'Tier pieces given',
                 data: []
             }],
             borderWidth: 1
         },
         options: {
+            legend: {
+                display: false
+            },
             title: {
                 display: true,
                 text: 'Tier distribution betweer players on all difficulties for all response types'
@@ -244,6 +251,7 @@ $(document).ready(function() {
         lootTosTierByPlayerPieChart.update();
     });
 
+    // ***** Players who have received any tier per difficulty *****
     var lootTosTierByDifficulty = $("#lootTosTierByDifficulty");
     var lootTosTierByDifficultyChart = new Chart(lootTosTierByDifficulty, {
         type: 'bar',
@@ -276,7 +284,7 @@ $(document).ready(function() {
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero: true
+                        stepSize: 1
                     }
                 }]
             }
@@ -284,7 +292,7 @@ $(document).ready(function() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-unique-players.php"
+        url: "js/data/get-active-raiders.php"
     }).done(function(data) {
         var lblArray = [];
         for (var i = 0; i < data.length; i++) {
@@ -295,65 +303,112 @@ $(document).ready(function() {
             method: "GET",
             url: "js/data/get-player-tier-normal.php"
         }).done(function(data) {
-            var dataArray = [];
-            var players = [];
-            var playersItemsCount = [];
-            var bg_colors = [];
+            var playersItemsCount = Array.apply(null, Array(lblArray.length)).map(function() {
+                return 0
+            });
             for (var i = 0; i < data.length; i++) {
-                players.push(data[i].player);
-                playersItemsCount.push(data[i].num);
-                bg_colors.push(colorByClass(data[i].class));
+                //playersItemsCount.push(data[i].num);
+                for (var x = 0; x < lblArray.length; x++) {
+                    if (lblArray[x] == data[i].player) {
+                        playersItemsCount[x] = data[i].num;
+                    }
+                }
             }
 
             lootTosTierByDifficultyChart.data.datasets[0].data = playersItemsCount;
-            lootTosTierByDifficultyChart.data.labels = players;
-
-            //lootTosTierByDifficultyChart.data.datasets[0].backgroundColor = bg_colors;
-            //lootTosTierByDifficultyChart.data.datasets[0].borderColor = bg_colors;
             lootTosTierByDifficultyChart.update();
         });
         $.ajax({
             method: "GET",
             url: "js/data/get-player-tier-heroic.php"
         }).done(function(data) {
-            var players = [];
-            var playersItemsCount = [];
-            var bg_colors = [];
+            var playersItemsCount = Array.apply(null, Array(lblArray.length)).map(function() {
+                return 0
+            });
             for (var i = 0; i < data.length; i++) {
-                players.push(data[i].player);
-                playersItemsCount.push(data[i].num);
-                bg_colors.push(colorByClass(data[i].class));
+                //playersItemsCount.push(data[i].num);
+                for (var x = 0; x < lblArray.length; x++) {
+                    if (lblArray[x] == data[i].player) {
+                        playersItemsCount[x] = data[i].num;
+                        break;
+                    }
+                }
             }
 
             lootTosTierByDifficultyChart.data.datasets[1].data = playersItemsCount;
-            lootTosTierByDifficultyChart.data.labels = players;
-
-            //lootTosTierByDifficultyChart.data.datasets[1].backgroundColor = bg_colors;
-            //lootTosTierByDifficultyChart.data.datasets[1].borderColor = bg_colors;
             lootTosTierByDifficultyChart.update();
         });
         $.ajax({
             method: "GET",
             url: "js/data/get-player-tier-mythic.php"
         }).done(function(data) {
-            var dataArray = [];
-            var players = [];
-            var playersItemsCount = [];
-            var bg_colors = [];
+            var playersItemsCount = Array.apply(null, Array(lblArray.length)).map(function() {
+                return 0
+            });
             for (var i = 0; i < data.length; i++) {
-                players.push(data[i].player);
-                playersItemsCount.push(data[i].num);
-                bg_colors.push(colorByClass(data[i].class));
+                //playersItemsCount.push(data[i].num);
+                for (var x = 0; x < lblArray.length; x++) {
+                    if (lblArray[x] == data[i].player) {
+                        playersItemsCount[x] = data[i].num;
+                    }
+                }
             }
 
             lootTosTierByDifficultyChart.data.datasets[2].data = playersItemsCount;
-            lootTosTierByDifficultyChart.data.labels = players;
-
-            //lootTosTierByDifficultyChart.data.datasets[2].backgroundColor = bg_colors;
-            //lootTosTierByDifficultyChart.data.datasets[2].borderColor = bg_colors;
             lootTosTierByDifficultyChart.update();
         });
+    });
 
+    //raidersByClass
+    // ***** Raider distribution by class *****
+    var raidersByClass = $('#raidersByClass');
+    var raidersByClassPieChart = new Chart(raidersByClass, {
+        type: 'bar',
+        responsive: true,
+        data: {
+            labels: [],
+            datasets: [{
+                backgroundColor: [],
+                data: []
+            }],
+            borderWidth: 1
+        },
+        options: {
+            legend: {
+                display: false
+            },
+            title: {
+                display: true,
+                text: 'Active raider distribution by class'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        stepSize: 1
+                    }
+                }]
+            }
+        }
+    });
+    $.ajax({
+        method: "GET",
+        url: "js/data/get-active-raiders-by-class.php"
+    }).done(function(data) {
+        var class_ = [];
+        var class_count = [];
+        var bg_colors = [];
+        for (var i = 0; i < data.length; i++) {
+            class_.push(data[i].class);
+            class_count.push(data[i].num);
+            bg_colors.push(colorByClass(data[i].class));
+        }
+        raidersByClassPieChart.data.datasets[0].data = class_count;
+        raidersByClassPieChart.data.labels = class_;
+
+        raidersByClassPieChart.data.datasets[0].backgroundColor = bg_colors;
+        raidersByClassPieChart.data.datasets[0].borderColor = bg_colors;
+        raidersByClassPieChart.update();
     });
 
 });
@@ -426,18 +481,18 @@ var largeBackgroundColorArray = [
 ]
 
 var classColors = [
-    'rgba(231, 76, 60,0.5)', //dk
-    'rgba(155, 89, 182,0.5)', //dh
-    'rgba(230, 126, 34,0.5)', //druid
-    'rgba(39, 174, 96,0.5)', //hunter
-    'rgba(60, 177, 255,0.5)', //mage
-    'rgba(26, 188, 156,0.5)', //monk
-    'rgba(240,98,146 ,0.5)', //paladin
-    'rgba(189, 195, 199,0.5)', //priest
-    'rgba(241, 196, 15,0.5)', //rogue
-    'rgba(31, 114, 168,0.5)', //shaman
-    'rgba(142, 68, 173,0.6)', //warlock
-    'rgba(132,117,69,0.5)' //warrior
+    'rgba(231, 76, 60,0.7)', //dk
+    'rgba(155, 89, 182,0.7)', //dh
+    'rgba(230, 126, 34,0.7)', //druid
+    'rgba(39, 174, 96,0.7)', //hunter
+    'rgba(60, 177, 255,0.7)', //mage
+    'rgba(26, 188, 156,0.7)', //monk
+    'rgba(240,98,146 ,0.7)', //paladin
+    'rgba(189, 195, 199,0.7)', //priest
+    'rgba(241, 196, 15,0.7)', //rogue
+    'rgba(31, 114, 168,0.7)', //shaman
+    'rgba(142, 68, 173,0.7)', //warlock
+    'rgba(132,117,69,0.7)' //warrior
 ];
 
 function colorByClass(className) {

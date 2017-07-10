@@ -8,7 +8,7 @@ $db = "disappointedloa";
 $con = mysqli_connect($hostname, $username, $password, $db);
 
 //query to see if game already exists
-$sql = "SELECT distinct player, class FROM loot_history";
+$sql = "SELECT distinct class, count(class) as num FROM disappointedloa.raiders where status=1 group by class";
 $result = $con->query($sql);
 
 try {
