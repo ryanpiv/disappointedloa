@@ -194,8 +194,162 @@ $(document).ready(function() {
         lootByTosDifficultyPieChart.data.labels = instances;
         lootByTosDifficultyPieChart.update();
     });
-});
 
+    var lootTosTierByPlayer = $("#lootTosTierByPlayer");
+    var lootTosTierByPlayerPieChart = new Chart(lootTosTierByPlayer, {
+        type: 'bar',
+        responsive: true,
+        data: {
+            labels: [],
+            datasets: [{
+                label: '# of Votes',
+                data: []
+            }],
+            borderWidth: 1
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Tier distribution betweer players on all difficulties for all response types'
+            }
+        }
+    });
+    $.ajax({
+        method: "GET",
+        url: "js/data/get-player-tier-all.php"
+    }).done(function(data) {
+        var dataArray = [];
+        var players = [];
+        var playersItemsCount = [];
+        var bg_colors = [];
+        for (var i = 0; i < data.length; i++) {
+            players.push(data[i].player);
+            playersItemsCount.push(data[i].num);
+            bg_colors.push(colorByClass(data[i].class));
+        }
+        //addData(lootTosTierByPlayerPieChart, players, playersItemsCount);
+
+        lootTosTierByPlayerPieChart.data.datasets[0].data = playersItemsCount;
+        lootTosTierByPlayerPieChart.data.labels = players;
+
+        lootTosTierByPlayerPieChart.data.datasets[0].backgroundColor = bg_colors;
+        lootTosTierByPlayerPieChart.data.datasets[0].borderColor = bg_colors;
+        lootTosTierByPlayerPieChart.update();
+    });
+
+    var lootTosTierByDifficulty = $("#lootTosTierByDifficulty");
+    var lootTosTierByDifficultyChart = new Chart(lootTosTierByDifficulty, {
+        type: 'bar',
+        responsive: true,
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Normal',
+                backgroundColor: 'rgba(241, 196, 15,1.0)',
+                borderColor: 'rgba(241, 196, 15,1.0)',
+                data: []
+            }, {
+                label: 'Heroic',
+                backgroundColor: 'rgba(230, 126, 34,1.0)',
+                borderColor: 'rgba(230, 126, 34,1.0)',
+                data: []
+            }, {
+                label: 'Mythic',
+                backgroundColor: 'rgba(231, 76, 60,1.0)',
+                borderColor: 'rgba(231, 76, 60,1.0)',
+                data: []
+            }],
+            borderWidth: 1
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Tier distribution betweer players by difficulty'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    $.ajax({
+        method: "GET",
+        url: "js/data/get-unique-players.php"
+    }).done(function(data) {
+        var lblArray = [];
+        for (var i = 0; i < data.length; i++) {
+            lblArray.push(data[i].player);
+        }
+        lootTosTierByDifficultyChart.data.labels = lblArray;
+        $.ajax({
+            method: "GET",
+            url: "js/data/get-player-tier-normal.php"
+        }).done(function(data) {
+            var dataArray = [];
+            var players = [];
+            var playersItemsCount = [];
+            var bg_colors = [];
+            for (var i = 0; i < data.length; i++) {
+                players.push(data[i].player);
+                playersItemsCount.push(data[i].num);
+                bg_colors.push(colorByClass(data[i].class));
+            }
+
+            lootTosTierByDifficultyChart.data.datasets[0].data = playersItemsCount;
+            lootTosTierByDifficultyChart.data.labels = players;
+
+            //lootTosTierByDifficultyChart.data.datasets[0].backgroundColor = bg_colors;
+            //lootTosTierByDifficultyChart.data.datasets[0].borderColor = bg_colors;
+            lootTosTierByDifficultyChart.update();
+        });
+        $.ajax({
+            method: "GET",
+            url: "js/data/get-player-tier-heroic.php"
+        }).done(function(data) {
+            var players = [];
+            var playersItemsCount = [];
+            var bg_colors = [];
+            for (var i = 0; i < data.length; i++) {
+                players.push(data[i].player);
+                playersItemsCount.push(data[i].num);
+                bg_colors.push(colorByClass(data[i].class));
+            }
+
+            lootTosTierByDifficultyChart.data.datasets[1].data = playersItemsCount;
+            lootTosTierByDifficultyChart.data.labels = players;
+
+            //lootTosTierByDifficultyChart.data.datasets[1].backgroundColor = bg_colors;
+            //lootTosTierByDifficultyChart.data.datasets[1].borderColor = bg_colors;
+            lootTosTierByDifficultyChart.update();
+        });
+        $.ajax({
+            method: "GET",
+            url: "js/data/get-player-tier-mythic.php"
+        }).done(function(data) {
+            var dataArray = [];
+            var players = [];
+            var playersItemsCount = [];
+            var bg_colors = [];
+            for (var i = 0; i < data.length; i++) {
+                players.push(data[i].player);
+                playersItemsCount.push(data[i].num);
+                bg_colors.push(colorByClass(data[i].class));
+            }
+
+            lootTosTierByDifficultyChart.data.datasets[2].data = playersItemsCount;
+            lootTosTierByDifficultyChart.data.labels = players;
+
+            //lootTosTierByDifficultyChart.data.datasets[2].backgroundColor = bg_colors;
+            //lootTosTierByDifficultyChart.data.datasets[2].borderColor = bg_colors;
+            lootTosTierByDifficultyChart.update();
+        });
+
+    });
+
+});
 
 function generateRandomColor() {
     return '#' + ("000000" + Math.random().toString(16).slice(2, 8).toUpperCase()).slice(-6);

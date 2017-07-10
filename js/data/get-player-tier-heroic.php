@@ -8,7 +8,11 @@ $db = "disappointedloa";
 $con = mysqli_connect($hostname, $username, $password, $db);
 
 //query to see if game already exists
-$sql = "SELECT distinct player, class FROM loot_history";
+$sql = "SELECT distinct player, count(item) as num, class from disappointedloa.loot_history 
+where (item like '%conqueror%' or item like '%vanquisher%' or item like '%protector%') 
+and instance='Tomb of Sargeras-Heroic' 
+group by player
+order by player desc";
 $result = $con->query($sql);
 
 try {

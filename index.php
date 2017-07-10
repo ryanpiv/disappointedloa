@@ -65,6 +65,13 @@
       <div class="col-md-4"t>
         <canvas id="lootByTosDifficultyChart"></canvas>
       </div>
+      <div class="col-md-8 col-md-offset-2"t>
+        <canvas id="lootTosTierByPlayer"></canvas>
+      </div>
+      <div class="col-md-8 col-md-offset-2"t>
+        <canvas id="lootTosTierByDifficulty"></canvas>
+      </div>
+
     </div>
 
 	</section>
