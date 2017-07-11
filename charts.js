@@ -21,6 +21,11 @@ $(document).ready(function() {
                     ticks: {
                         beginAtZero: true
                     }
+                }],
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false
+                    }
                 }]
             }
         }
@@ -75,6 +80,11 @@ $(document).ready(function() {
                     ticks: {
                         beginAtZero: true
                     }
+                }],
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false
+                    }
                 }]
             }
         }
@@ -110,7 +120,12 @@ $(document).ready(function() {
             title: {
                 display: true,
                 text: 'Loot distribution by class'
-            }
+            },
+            xAxes: [{
+                ticks: {
+                    autoSkip: false
+                }
+            }]
         }
     });
     $.ajax({
@@ -144,7 +159,12 @@ $(document).ready(function() {
             title: {
                 display: true,
                 text: 'Loot distribution by response'
-            }
+            },
+            xAxes: [{
+                ticks: {
+                    autoSkip: false
+                }
+            }]
         }
     });
     $.ajax({
@@ -182,7 +202,12 @@ $(document).ready(function() {
             title: {
                 display: true,
                 text: 'Loot distribution by ToS Difficulty'
-            }
+            },
+            xAxes: [{
+                ticks: {
+                    autoSkip: false
+                }
+            }]
         }
     });
     $.ajax({
@@ -223,6 +248,11 @@ $(document).ready(function() {
                 yAxes: [{
                     ticks: {
                         beginAtZero: true
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false
                     }
                 }]
             }
@@ -285,6 +315,11 @@ $(document).ready(function() {
                 yAxes: [{
                     ticks: {
                         stepSize: 1
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false
                     }
                 }]
             }
@@ -401,6 +436,11 @@ $(document).ready(function() {
                         beginAtZero: true,
                         stepSize: 5
                     }
+                }],
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false
+                    }
                 }]
             }
         }
@@ -479,6 +519,11 @@ $(document).ready(function() {
                     ticks: {
                         beginAtZero: true,
                         stepSize: 1
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false
                     }
                 }]
             }
