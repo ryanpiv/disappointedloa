@@ -1,4 +1,68 @@
+var nightmode = false;
+var nm_count = 0;
+//this is a fucking dumb ass bug
+
+var color_text = '#333';
+var color_bg = '#fff';
+var color_gridlines = 'rgba(213, 213, 213, 0.7)';
+
+
+function toggleNightMode() {
+    if (nightmode) {
+        //color_text = 'rgba(191, 191, 191, 1)';
+        color_text = 'rgba(207, 207, 207,1)';
+        color_bg = 'rgba(51, 51, 51, 1)';
+        color_gridlines = 'rgba(213, 213, 213, 0.2)';
+        $("#nightmodeToggle").find('input').prop('checked', true);
+    } else {
+        color_text = '#333';
+        color_bg = '#fff';
+        color_gridlines = 'rgba(213, 213, 213, 0.7)';
+    }
+    $('body').css('backgroundColor', color_bg);
+    $('.page-header').css('color', color_text);
+}
+
+function drawGrids() {
+    createLootHistoryBarChart();
+    createLootByClassPieChart();
+    createLootByTosDifficultyPieChart();
+    createLootTosTierByPlayerPieChart();
+    createLootTosTierByDifficultyChart();
+    createLootTosTierTokenDistributionChart();
+    createRaidersByClassPieChart();
+    createLoaHistoryBarChart();
+}
+
 $(document).ready(function() {
+    //get nightmode from cookies
+    getNightmodeCookie();
+    toggleNightMode();
+    drawGrids();
+
+    $('#nightmodeToggle').on('click', function() {
+        if (nm_count == 0) {
+            nightmode = !nightmode;
+            Cookies.set("disappointedloa_nightmode", nightmode);
+            toggleNightMode();
+            drawGrids();
+            nm_count++;
+        } else {
+            nm_count = 0;
+        }
+    });
+});
+
+function getNightmodeCookie() {
+    nightmode = Cookies.get("disappointedloa_nightmode");
+    if (nightmode == 'true' || nightmode == true) {
+        nightmode = true;
+    } else {
+        nightmode = false;
+    }
+}
+
+function createLootHistoryBarChart() {
     var ctx = $("#myChart");
     var lootHistoryBarChart = new Chart(ctx, {
         type: 'bar',
@@ -14,19 +78,31 @@ $(document).ready(function() {
             },
             title: {
                 display: true,
-                text: 'Players who received items not equal to xmog, OS or Pass'
+                text: 'Players who received items not equal to xmog, OS or Pass',
+                fontColor: color_text
             },
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }],
                 xAxes: [{
                     ticks: {
-                        autoSkip: false
+                        autoSkip: false,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }]
+            },
+            chartArea: {
+                backgroundColor: color_bg
             }
         }
     });
@@ -48,62 +124,9 @@ $(document).ready(function() {
         lootHistoryBarChart.data.datasets[0].borderColor = bg_colors;
         lootHistoryBarChart.update();
     });
+}
 
-    var ctx_loa = $("#myLoaChart");
-    var loaHistoryBarChart = new Chart(ctx_loa, {
-        type: 'bar',
-        responsive: true,
-        data: {
-            datasets: [{
-                backgroundColor: largeBackgroundColorArray,
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            title: {
-                display: true,
-                text: '# of Normal or NoLoA LoAs'
-            },
-            legend: {
-                display: false
-            },
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }],
-                xAxes: [{
-                    ticks: {
-                        autoSkip: false
-                    }
-                }]
-            }
-        }
-    });
-    $.ajax({
-        method: "GET",
-        url: "js/data/get-unique-player-loa-count.php"
-    }).done(function(data) {
-        var players = [];
-        var players_loas = [];
-        for (var i = 0; i < data.length; i++) {
-            players.push(data[i].discordusername);
-            players_loas.push(data[i].num);
-        }
-        loaHistoryBarChart.data.datasets[0].data = players_loas;
-        loaHistoryBarChart.data.labels = players;
-        loaHistoryBarChart.update();
-    });
-
+function createLootByClassPieChart() {
     var lootByClassChart = $('#lootByClassChart');
     var lootByClassPieChart = new Chart(lootByClassChart, {
         type: 'pie',
@@ -119,11 +142,21 @@ $(document).ready(function() {
         options: {
             title: {
                 display: true,
-                text: 'Loot distribution by class'
+                text: 'Loot distribution by class',
+                fontColor: color_text
+            },
+            legend: {
+                labels: {
+                    fontColor: color_text
+                }
             },
             xAxes: [{
                 ticks: {
-                    autoSkip: false
+                    autoSkip: false,
+                    fontColor: color_text
+                },
+                gridLines: {
+                    color: color_gridlines
                 }
             }]
         }
@@ -158,11 +191,21 @@ $(document).ready(function() {
         options: {
             title: {
                 display: true,
-                text: 'Loot distribution by response'
+                text: 'Loot distribution by response',
+                fontColor: color_text
+            },
+            legend: {
+                labels: {
+                    fontColor: color_text
+                }
             },
             xAxes: [{
                 ticks: {
-                    autoSkip: false
+                    autoSkip: false,
+                    fontColor: color_text
+                },
+                gridLines: {
+                    color: color_gridlines
                 }
             }]
         }
@@ -181,7 +224,9 @@ $(document).ready(function() {
         lootByResponsePieChart.data.labels = responses;
         lootByResponsePieChart.update();
     });
+}
 
+function createLootByTosDifficultyPieChart() {
     // ***** Loot distribution by the current raid *****
     var lootByTosDifficultyChart = $('#lootByTosDifficultyChart');
     var lootByTosDifficultyPieChart = new Chart(lootByTosDifficultyChart, {
@@ -201,11 +246,21 @@ $(document).ready(function() {
         options: {
             title: {
                 display: true,
-                text: 'Loot distribution by ToS Difficulty'
+                text: 'Loot distribution by ToS Difficulty',
+                fontColor: color_text
+            },
+            legend: {
+                labels: {
+                    fontColor: color_text
+                }
             },
             xAxes: [{
                 ticks: {
-                    autoSkip: false
+                    autoSkip: false,
+                    fontColor: color_text
+                },
+                gridLines: {
+                    color: color_gridlines
                 }
             }]
         }
@@ -224,7 +279,9 @@ $(document).ready(function() {
         lootByTosDifficultyPieChart.data.labels = instances;
         lootByTosDifficultyPieChart.update();
     });
+}
 
+function createLootTosTierByPlayerPieChart() {
     // ***** Players who have received tier *****
     var lootTosTierByPlayer = $("#lootTosTierByPlayer");
     var lootTosTierByPlayerPieChart = new Chart(lootTosTierByPlayer, {
@@ -242,17 +299,26 @@ $(document).ready(function() {
             },
             title: {
                 display: true,
-                text: 'Tier distribution between players on all difficulties for all response types'
+                text: 'Tier distribution between players on all difficulties for all response types',
+                fontColor: color_text
             },
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }],
                 xAxes: [{
                     ticks: {
-                        autoSkip: false
+                        autoSkip: false,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }]
             }
@@ -280,7 +346,9 @@ $(document).ready(function() {
         lootTosTierByPlayerPieChart.data.datasets[0].borderColor = bg_colors;
         lootTosTierByPlayerPieChart.update();
     });
+}
 
+function createLootTosTierByDifficultyChart() {
     // ***** Players who have received any tier per difficulty *****
     var lootTosTierByDifficulty = $("#lootTosTierByDifficulty");
     var lootTosTierByDifficultyChart = new Chart(lootTosTierByDifficulty, {
@@ -309,17 +377,26 @@ $(document).ready(function() {
         options: {
             title: {
                 display: true,
-                text: 'Tier distribution between players by difficulty'
+                text: 'Tier distribution between players by difficulty',
+                fontColor: color_text
             },
             scales: {
                 yAxes: [{
                     ticks: {
-                        stepSize: 1
+                        stepSize: 1,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }],
                 xAxes: [{
                     ticks: {
-                        autoSkip: false
+                        autoSkip: false,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }]
             }
@@ -393,7 +470,9 @@ $(document).ready(function() {
             lootTosTierByDifficultyChart.update();
         });
     });
+}
 
+function createLootTosTierTokenDistributionChart() {
     //lootTosTierTokenDistribution
     // ***** Tier Token drops by All and every difficulty for all responses and raiders *****
     var lootTosTierTokenDistribution = $('#lootTosTierTokenDistribution');
@@ -428,18 +507,32 @@ $(document).ready(function() {
         options: {
             title: {
                 display: true,
-                text: 'Tier Token drops by all and every difficulty for all responses and raider statuses'
+                text: 'Tier Token drops by all and every difficulty for all responses and raider statuses',
+                fontColor: color_text
+            },
+            legend: {
+                labels: {
+                    fontColor: color_text
+                }
             },
             scales: {
                 yAxes: [{
                     ticks: {
                         beginAtZero: true,
-                        stepSize: 5
+                        stepSize: 5,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }],
                 xAxes: [{
                     ticks: {
-                        autoSkip: false
+                        autoSkip: false,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }]
             }
@@ -477,22 +570,9 @@ $(document).ready(function() {
         lootTosTierTokenDistributionChart.data.datasets[3].data = tokensCount;
         lootTosTierTokenDistributionChart.update();
     });
+}
 
-    function sortTierArray(tierArray) {
-        var newArray = [];
-        for (var i = 0; i < tierArray.length; i++) {
-            if (tierArray[i].item.toLowerCase().includes('vanquisher')) {
-                newArray[0] = tierArray[i].num;
-            } else if (tierArray[i].item.toLowerCase().includes('conqueror')) {
-                newArray[1] = tierArray[i].num;
-            } else if (tierArray[i].item.toLowerCase().includes('protector')) {
-                newArray[2] = tierArray[i].num;
-            }
-        }
-        return newArray;
-    }
-
-
+function createRaidersByClassPieChart() {
     // ***** Raider distribution by class *****
     var raidersByClass = $('#raidersByClass');
     var raidersByClassPieChart = new Chart(raidersByClass, {
@@ -512,18 +592,27 @@ $(document).ready(function() {
             },
             title: {
                 display: true,
-                text: 'Active raider distribution by class'
+                text: 'Active raider distribution by class',
+                fontColor: color_text
             },
             scales: {
                 yAxes: [{
                     ticks: {
                         beginAtZero: true,
-                        stepSize: 1
+                        stepSize: 1,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }],
                 xAxes: [{
                     ticks: {
-                        autoSkip: false
+                        autoSkip: false,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
                     }
                 }]
             }
@@ -548,6 +637,102 @@ $(document).ready(function() {
         raidersByClassPieChart.data.datasets[0].borderColor = bg_colors;
         raidersByClassPieChart.update();
     });
+}
+
+function createLoaHistoryBarChart() {
+    var ctx_loa = $("#myLoaChart");
+    var loaHistoryBarChart = new Chart(ctx_loa, {
+        type: 'bar',
+        responsive: true,
+        data: {
+            datasets: [{
+                backgroundColor: largeBackgroundColorArray,
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: '# of Normal or NoLoA LoAs',
+                fontColor: color_text
+            },
+            legend: {
+                display: false
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false,
+                        fontColor: color_text
+                    },
+                    gridLines: {
+                        color: color_gridlines
+                    }
+                }]
+            }
+        }
+    });
+    $.ajax({
+        method: "GET",
+        url: "js/data/get-unique-player-loa-count.php"
+    }).done(function(data) {
+        var players = [];
+        var players_loas = [];
+        for (var i = 0; i < data.length; i++) {
+            players.push(data[i].discordusername);
+            players_loas.push(data[i].num);
+        }
+        loaHistoryBarChart.data.datasets[0].data = players_loas;
+        loaHistoryBarChart.data.labels = players;
+        loaHistoryBarChart.update();
+    });
+}
+
+
+function sortTierArray(tierArray) {
+    var newArray = [];
+    for (var i = 0; i < tierArray.length; i++) {
+        if (tierArray[i].item.toLowerCase().includes('vanquisher')) {
+            newArray[0] = tierArray[i].num;
+        } else if (tierArray[i].item.toLowerCase().includes('conqueror')) {
+            newArray[1] = tierArray[i].num;
+        } else if (tierArray[i].item.toLowerCase().includes('protector')) {
+            newArray[2] = tierArray[i].num;
+        }
+    }
+    return newArray;
+}
+
+Chart.pluginService.register({
+    beforeDraw: function(chart, easing) {
+        if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
+            var helpers = Chart.helpers;
+            var ctx = chart.chart.ctx;
+            var chartArea = chart.chartArea;
+
+            ctx.save();
+            ctx.fillStyle = chart.config.options.chartArea.backgroundColor;
+            ctx.fillRect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
+            ctx.restore();
+        }
+    }
 });
 
 function generateRandomColor() {

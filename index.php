@@ -51,6 +51,15 @@
         <li><a href="#loaAnalytics">LoA Analytics</a></li>
         <li><a href="#loaGrid">LoA Grid</a></li>
       </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a>Night Mode</a></li>
+        <li id="nightmodeToggle" class="li-slider">
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider round"></span>
+          </label>
+        </li>
+      </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
