@@ -309,7 +309,7 @@ $(document).ready(function() {
         options: {
             title: {
                 display: true,
-                text: 'Tier distribution betweer players by difficulty'
+                text: 'Tier distribution between players by difficulty'
             },
             scales: {
                 yAxes: [{
