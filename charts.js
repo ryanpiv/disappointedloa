@@ -13,11 +13,11 @@ function toggleNightMode() {
         color_text = 'rgba(207, 207, 207,1)';
         color_bg = 'rgba(51, 51, 51, 1)';
         color_gridlines = 'rgba(213, 213, 213, 0.2)';
-        $("#nightmodeToggle").find('input').prop('checked', true);
     } else {
         color_text = '#333';
         color_bg = '#fff';
         color_gridlines = 'rgba(213, 213, 213, 0.7)';
+
     }
     $('body').css('backgroundColor', color_bg);
     $('.page-header').css('color', color_text);
@@ -39,6 +39,9 @@ $(document).ready(function() {
     getNightmodeCookie();
     toggleNightMode();
     drawGrids();
+    if (nightmode) {
+        $("#nightmodeToggle").find('input').prop('checked', true);
+    }
 
     $('#nightmodeToggle').on('click', function() {
         if (nm_count == 0) {
