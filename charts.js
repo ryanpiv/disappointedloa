@@ -27,6 +27,7 @@ function drawGrids() {
     createLootHistoryBarChart();
     createLootByClassPieChart();
     createLootByTosDifficultyPieChart();
+    createLootByResponsePieChart();
     createLootTosTierByPlayerPieChart();
     createLootTosTierByDifficultyChart();
     createLootTosTierTokenDistributionChart();
@@ -178,7 +179,9 @@ function createLootByClassPieChart() {
         lootByClassPieChart.data.labels = classes;
         lootByClassPieChart.update();
     });
+}
 
+function createLootByResponsePieChart() {
     var lootByResponseChart = $('#lootByResponseChart');
     var lootByResponsePieChart = new Chart(lootByResponseChart, {
         type: 'pie',
@@ -227,6 +230,7 @@ function createLootByClassPieChart() {
         lootByResponsePieChart.data.labels = responses;
         lootByResponsePieChart.update();
     });
+
 }
 
 function createLootByTosDifficultyPieChart() {
@@ -402,6 +406,11 @@ function createLootTosTierByDifficultyChart() {
                         color: color_gridlines
                     }
                 }]
+            },
+            legend: {
+                labels: {
+                    fontColor: color_text
+                }
             }
         }
     });

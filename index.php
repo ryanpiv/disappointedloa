@@ -23,6 +23,9 @@
     section{
       padding-bottom: 100px;
     }
+    .pace{
+      z-index: 1031 !important;
+    }
   </style>
  </head>
 <body ng-controller="MainController" data-ng-init="init()">
