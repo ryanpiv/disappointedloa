@@ -12,6 +12,8 @@ moment.tz.setDefault('America/New_York');
 const Events = Discordie.Events;
 const client = new Discordie();
 
+const connected = false;
+
 var loachannel = '237085726208950272'; //real channel
 //var loachannel = '266749722692288512'; //test channel
 
@@ -25,7 +27,8 @@ var connection = mysql.createConnection({
     database: 'disappointedloa'
 });
 
-var versionNum = '3.0';
+var versionNum = '3.1';
+var initMessage = "Disappointed LoA Bot v" + versionNum + " ready!  Type !LoAHelp to get a message about everything I can do.";
 
 var sampleDate = moment().format('MM/DD/YY');
 
@@ -48,7 +51,9 @@ client.connect({
 
 client.Dispatcher.on(Events.GATEWAY_READY, e => {
     console.log('Connected as: ' + client.User.username);
-    sendDiscordMessage(loachannel, "Disappointed LoA Bot v" + versionNum + " ready!  Type !LoAHelp to get a message about everything I can do.");
+    if (connected == false) {
+        sendDiscordMessage(loachannel, initMessage);
+    }
 });
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
@@ -137,7 +142,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     break;
                 case '!loalistfordate':
                     console.log('loalistfordate executing');
-                    listLoAsForDate(e.message, loaObj);
+                    listLoAsForDate(e.message, loaObj, permissions);
                     break;
                 case '!loot':
                     console.log('!loot executing');
@@ -440,17 +445,21 @@ function listLoAs(message) {
     });
 }
 
-function listLoAsForDate(message) {
+function listLoAsForDate(message, loa, permissions) {
     var messageContent = message.content.toLowerCase().replace('!loalistfordate ', '');
-    if (Date.parse(messageContent) || messageContent.replace(/\s/g, "").toLowerCase() == 'today') {
-        messageContent = parseDateTodayAndYear(messageContent);
-        var sql = "SELECT * FROM loas WHERE date = DATE('" + moment(messageContent).format('YYYY-MM-DD') + "' order by type asc)";
+    loa.dateCheck = messageContent;
+    loa = checkDate(loa, permissions);
+    if (loa.status) {
+        loa.date = loa.dateCheck;
+
+        var sql = "SELECT * FROM loas WHERE date = DATE('" + moment(loa.date).format('YYYY-MM-DD') + "') order by type asc";
         connection.query(sql, function(error, results, fields) {
             if (error) {
                 sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
+                console.log(sql);
             } else {
                 if (results.length > 0) {
-                    var strMessage = 'Active LoAs found for ' + moment(messageContent).format('dddd, MM/DD/YY') + '\n';
+                    var strMessage = 'Active LoAs found for ' + moment(loa.date).format('dddd, MM/DD/YY') + '\n';
                     for (var i = 0; i < results.length; i++) {
                         strMessage += results[i].discordusername;
                         if (results[i].type !== 'normal') {
@@ -464,7 +473,7 @@ function listLoAsForDate(message) {
                     }
                     sendDiscordMessage(loachannel, strMessage);
                 } else {
-                    sendDiscordMessage(loachannel, 'There are no active LoAs for ' + moment(new Date(messageContent).toISOString()).format('dddd, MM/DD/YY') + '.');
+                    sendDiscordMessage(loachannel, 'There are no active LoAs for ' + moment(loa.date).format('dddd, MM/DD/YY') + '.');
                 }
             }
         });
@@ -479,7 +488,7 @@ function parseLoot(url, permissions) {
             csv.parse(body, function(error, body) {
                 if (!error) {
                     console.log(body.length);
-                    sendDiscordMessage(loachannel, 'Preparing to parse ' + body.length + ' items');
+                    sendDiscordMessage(loachannel, 'Preparing to parse ' + (body.length - 1) + ' items');
 
                     //check to see if first entry is parsing data
                     if (body[0][0].toLowerCase() == 'player' && body[0][1].toLowerCase() == ' date') {
