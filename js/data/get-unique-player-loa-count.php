@@ -8,7 +8,7 @@ $db = "disappointedloa";
 $con = mysqli_connect($hostname, $username, $password, $db);
 
 //query to see if game already exists
-$sql = "SELECT discordusername, count(*) as num FROM disappointedloa.loas group by discordusername order by num desc";
+$sql = "SELECT discordusername, count(*) as num FROM disappointedloa.loas where status=1 group by discordusername order by num desc";
 $result = $con->query($sql);
 
 try {
