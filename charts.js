@@ -683,7 +683,8 @@ function createLoaHistoryBarChart() {
                 yAxes: [{
                     ticks: {
                         beginAtZero: true,
-                        fontColor: color_text
+                        fontColor: color_text,
+                        stepSize: 1
                     },
                     gridLines: {
                         color: color_gridlines
