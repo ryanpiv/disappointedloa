@@ -25,30 +25,38 @@ var connection = mysql.createConnection({
     database: 'disappointedloa'
 });
 
-var versionNum = '3.0';
+var versionNum = '3.1';
+var versionAnnounce = 0;
 
 var sampleDate = moment().format('MM/DD/YY');
 
 var loaDays = [6, 0];
 
 var helpText = '__**Disappointed Leave of Absensce (LoA) Bot Help**__\n\n' +
-    '**!LoA**: Create a basic LoA.\nFormat: !loa <Date>, <Reason (optional)>\n' +
+    '**!LoA**: Create a basic LoA.\nFormat: !LoA <Date>, <Reason (optional)>\n' +
     'Example: !LoA ' + sampleDate + ', I will be on vacation.  You do not need to provide a reason, but someone people just like to.  In most cases, not providing a reason is preferred.\nExample wihout a reason: !loa ' + sampleDate + '\n\n' +
     '**!LoALate:** Creates a basic LoA, but defines a property to let the officers know you only plan on being late and not missing entirely.\nFormat: !LoALate: <Date>, <Reason (optional)>\nExample: !LoALate ' + sampleDate + ', I will be 15 minutes late.  The reason is still optional.\n\n' +
-    '**!LoADelete:** Deletes an LoA that has yet to pass.\nFormat: !LoADelete <Date>\nYou may only delete your LoA before or on the date originally entered.  LoAs after that date may not be deleted.\nExample: !LoADelete ' + sampleDate + '\n\nAdmins: You may delete dates for others with this command using the format: !LoADelete <date>, <@User>.\n\nExample: !LoADelete today, @smaktat\n\n' +
+    '**!LoADelete:** Deletes an LoA that has yet to pass.\nFormat: !LoADelete <Date>\nYou may only delete your LoA before or on the date originally entered.  LoAs after that date may not be deleted.\nExample: !LoADelete ' + sampleDate + '\n\n' +
     '**!LoAUpdate:** Updates an existing LoA entry.\nFormat: !LoAUpdate <PreviousDate>, <NewDate>, <NewReason (optional)>\nAs with deletes, updates may only be edited before or on the date entered.\nExample: !LoAUpdate 6/19/17, 6/20/17, Work schedule changed.  The LoA for 6/19 was moved to 6/20 and the reason was also changed.\nIf you would like to update a reason for an existing entry, use the format !LoAUpdate <date>, <reason>.\nExample: !LoAUpdate today, I will be an hour late.\n\n' +
     '**!LoAList:** Lists all LoAs entered for the user who entered the command.\nExample: !LoAList\n\n' +
-    '**!LoAListForDate:** Lists all LoAs for a specific date.\nFormat: !LoAListForDate <date>\nExample: !LoAListForDate ' + sampleDate + '\n\n' +
-    '**!NoLoA:** Creates an LoA for a user.  This command is only useable by members with Administrator access to the LoA channel.\nFormat: !NoLoA <date>, <@User>\nExample: !NoLoA ' + sampleDate + ', @smaktat.\n\n' +
-    '**!Loot**: Type this command and attach a text file with RC Loot Council CSV (Comma Seperated Values) information.  Only works with an attachemnt and only useable by Administrators';
+    '**!LoAListForDate:** Lists all LoAs for a specific date.\nFormat: !LoAListForDate <date>\nExample: !LoAListForDate ' + sampleDate + '\n\n';
+
+var helpTextTwo = '\n\n__**Admin Only Commands**__\n\n' +
+    '**!LoA**: Creates a basic LoA for a user.  Useful for when a user provides an LoA but needs help with submission.  As with the other commands, reason is an optional parameter.\nFormat: !LoA <date>, <@user>, <reason (optional)>.\nExample !LoA ' + sampleDate + ', @smaktat, Working\n\n' +
+    '**!LoADelete:** Deletes an LoA for another user.  Useful when a user is not able to delete their LoA or an Admin has added an LoA for a user and needs to remove it.\nFormat: !LoADelete <date>, <@user>\nExample: !LoADelete ' + sampleDate + ', @smaktat\n\n' +
+    '**!Loot**: Type this command and attach a text file with RC Loot Council CSV (Comma Seperated Values) data.  Only works with an attachment.\n\n' +
+    '**!NoLoA:** Creates an LoA for a user.\nFormat: !NoLoA <date>, <@User>\nExample: !NoLoA ' + sampleDate + ', @smaktat.';
 
 client.connect({
     token: token
 });
 
 client.Dispatcher.on(Events.GATEWAY_READY, e => {
-    console.log('Connected as: ' + client.User.username);
-    sendDiscordMessage(loachannel, "Disappointed LoA Bot v" + versionNum + " ready!  Type !LoAHelp to get a message about everything I can do.");
+    if (versionAnnounce == 0) {
+        console.log('Connected as: ' + client.User.username);
+        sendDiscordMessage(loachannel, "Disappointed LoA Bot v" + versionNum + " ready!  Type !LoAHelp to get a message about everything I can do.");
+        versionAnnounce += 1;
+    }
 });
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
@@ -105,7 +113,18 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     break;
                 case '!loa':
                     console.log('loa executing');
-                    parseNormalLoA(e.message, 'normal', loaObj, permissions);
+                    if (e.message.mentions.length > 0) {
+                        if (permissions.General.ADMINISTRATOR == true) {
+                            for (var i = 0; i < e.message.mentions.length; i++) {
+                                e.message.author = e.message.mentions[i];
+                                parseNormalLoA(e.message, 'normal', loaObj, permissions, e.message.mentions[i]);
+                            }
+                        } else {
+                            sendDiscordMessage(loachannel, "Sorry " + e.message.author.username + ", you don't have the proper permission to do that.");
+                        }
+                    } else {
+                        parseNormalLoA(e.message, 'delete', loaObj, permissions);
+                    }
                     break;
                 case '!loadelete':
                     console.log('loadelete executing');
@@ -130,6 +149,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 case '!loahelp':
                     console.log('loahelp executing');
                     sendDirectMessage(e.message.author.id, helpText);
+                    sendDirectMessage(e.message.author.id, helpTextTwo);
                     break;
                 case '!loalist':
                     console.log('loalist executing');
@@ -137,7 +157,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     break;
                 case '!loalistfordate':
                     console.log('loalistfordate executing');
-                    listLoAsForDate(e.message, loaObj);
+                    listLoAsForDate(e.message, loaObj, permissions);
                     break;
                 case '!loot':
                     console.log('!loot executing');
@@ -255,7 +275,7 @@ function mysql_real_escape_string(val) {
     return val;
 };
 
-function parseNormalLoA(message, type, loa, permissions) {
+function parseNormalLoA(message, type, loa, permissions, loaUser) {
     //standard loa function
     //type can be changed
     loa.discordId = message.author.id;
@@ -266,15 +286,31 @@ function parseNormalLoA(message, type, loa, permissions) {
     messageContent = messageContent.replace('!loa', '');
     var messageArr = messageContent.toLowerCase().split(',');
 
+    if (loaUser) {
+        loa.discordId = loaUser.id;
+        loa.discordUsername = loaUser.username;
+    } else {
+        loa.discordId = message.author.id;
+        loa.discordUsername = message.author.username;
+    }
+    loa.type = type;
+
     loa.dateCheck = messageArr[0];
     loa = checkDate(loa, permissions);
     if (loa.status) {
         loa.date = loa.dateCheck;
         if (messageArr[1]) {
-            loa.reason = mysql_real_escape_string(messageArr[1]);
+            if (messageArr[1].includes('<@')) {
+                if (messageArr[2]) {
+                    console.log('2 ' + messageArr[2]);
+                    loa.reason = mysql_real_escape_string(messageArr[2]);
+                }
+            }
         }
         addloa(loa);
     }
+
+
 }
 
 function parseUpdateLoA(message, type, loa, permissions) {
@@ -307,12 +343,11 @@ function parseDeleteLoA(message, type, loa, permissions, loaUser) {
     if (loaUser) {
         loa.discordId = loaUser.id;
         loa.discordUsername = loaUser.username;
-        loa.type = 'noloadelete';
     } else {
         loa.discordId = message.author.id;
         loa.discordUsername = message.author.username;
-        loa.type = type;
     }
+    loa.type = type;
 
     var messageArr = messageContent.toLowerCase().split(',');
 
@@ -370,11 +405,6 @@ function addloa(loaObj) {
 
 function deleteloa(loaObj) {
     var sql = "SELECT * FROM loas WHERE date = DATE('" + moment(loaObj.date).format('YYYY-MM-DD') + "') ";
-    if (loaObj.type == 'noloadelete') {
-        sql += "AND type = 'noloa' ";
-    } else {
-        sql += "AND type <> 'noloa' ";
-    }
     sql += "AND discordid='" + loaObj.discordId + "'";
 
     connection.query(sql, function(error, results, fields) {
@@ -393,7 +423,6 @@ function deleteloa(loaObj) {
             sendDiscordMessage(loachannel, 'There are no LoAs to delete for <@' + loaObj.discordId + '> on ' + moment(loaObj.date).format("dddd, MM/DD/YY") + '.');
         }
     });
-
 }
 
 function updateloa(loaObj) {
@@ -440,17 +469,19 @@ function listLoAs(message) {
     });
 }
 
-function listLoAsForDate(message) {
+function listLoAsForDate(message, loa, permissions) {
     var messageContent = message.content.toLowerCase().replace('!loalistfordate ', '');
-    if (Date.parse(messageContent) || messageContent.replace(/\s/g, "").toLowerCase() == 'today') {
-        messageContent = parseDateTodayAndYear(messageContent);
-        var sql = "SELECT * FROM loas WHERE date = DATE('" + moment(messageContent).format('YYYY-MM-DD') + "' order by type asc)";
+    loa.dateCheck = messageContent;
+    loa = checkDate(loa, permissions);
+    if (loa.status) {
+        loa.date = loa.dateCheck;
+        var sql = "SELECT * FROM loas WHERE date = DATE('" + moment(loa.date).format('YYYY-MM-DD') + "') order by type asc";
         connection.query(sql, function(error, results, fields) {
             if (error) {
                 sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
             } else {
                 if (results.length > 0) {
-                    var strMessage = 'Active LoAs found for ' + moment(messageContent).format('dddd, MM/DD/YY') + '\n';
+                    var strMessage = 'Active LoAs found for ' + moment(loa.date).format('dddd, MM/DD/YY') + '\n';
                     for (var i = 0; i < results.length; i++) {
                         strMessage += results[i].discordusername;
                         if (results[i].type !== 'normal') {
@@ -464,7 +495,7 @@ function listLoAsForDate(message) {
                     }
                     sendDiscordMessage(loachannel, strMessage);
                 } else {
-                    sendDiscordMessage(loachannel, 'There are no active LoAs for ' + moment(new Date(messageContent).toISOString()).format('dddd, MM/DD/YY') + '.');
+                    sendDiscordMessage(loachannel, 'There are no active LoAs for ' + moment(loa.date).format('dddd, MM/DD/YY') + '.');
                 }
             }
         });
