@@ -12,11 +12,11 @@ moment.tz.setDefault('America/New_York');
 const Events = Discordie.Events;
 const client = new Discordie();
 
-//var loachannel = '237085726208950272'; //real channel
-var loachannel = '266749722692288512'; //test channel
+var loachannel = '237085726208950272'; //real channel
+//var loachannel = '266749722692288512'; //test channel
 
-var token = 'MzAwODEwOTE1NTg0OTMzODg4.DDvm1Q.04nE8k-QhSUves4P61-xtEGQYqA'; //test channel
-//var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
+//var token = 'MzAwODEwOTE1NTg0OTMzODg4.DDvm1Q.04nE8k-QhSUves4P61-xtEGQYqA'; //test channel
+var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real channel
 
 var connection = mysql.createConnection({
     host: 'mysql4.gear.host',
@@ -25,7 +25,7 @@ var connection = mysql.createConnection({
     database: 'disappointedloa'
 });
 
-var versionNum = '3.1';
+var versionNum = '3.2';
 var versionAnnounce = 0;
 
 var sampleDate = moment().format('MM/DD/YY');
