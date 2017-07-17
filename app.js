@@ -479,12 +479,13 @@ function parseLoot(url, permissions) {
             csv.parse(body, function(error, body) {
                 if (!error) {
                     console.log(body.length);
-                    sendDiscordMessage(loachannel, 'Preparing to parse ' + body.length + ' items');
 
                     //check to see if first entry is parsing data
                     if (body[0][0].toLowerCase() == 'player' && body[0][1].toLowerCase() == ' date') {
                         body.splice(0, 1);
                     }
+
+                    sendDiscordMessage(loachannel, 'Preparing to parse ' + body.length + ' items');
 
                     checkIfLootItemExists(body);
                 } else {
@@ -563,8 +564,7 @@ function sendDiscordMessage(channelId, message) {
 
 function sendDirectMessage(userId, message) {
     client.DirectMessageChannels.open(userId).then((dm) => {
-        dm.sendMessage('test');
-        dm.sendMessage(helpText);
+        dm.sendMessage(message);
     }).catch(function(error) {
         console.log(error);
     });
