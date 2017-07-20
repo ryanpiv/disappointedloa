@@ -14,7 +14,7 @@ $sortCol = $_GET['sortCol'];
 
 if ($pageNum != '') {
 	$pageNum -= 1;
-	$pageNum = $pageNum * 10;
+	$pageNum = $pageNum * $pageSize;
 } else {
 	$pageNum = 0;
 }
