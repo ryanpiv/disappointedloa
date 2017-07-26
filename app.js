@@ -126,7 +126,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                             sendDiscordMessage(loachannel, "Sorry " + e.message.author.username + ", you don't have the proper permission to do that.");
                         }
                     } else {
-                        parseNormalLoA(e.message, 'delete', loaObj, permissions);
+                        parseNormalLoA(e.message, 'normal', loaObj, permissions);
                     }
                     break;
                 case '!loadelete':
@@ -308,12 +308,14 @@ function parseNormalLoA(message, type, loa, permissions, loaUser) {
                     console.log('2 ' + messageArr[2]);
                     loa.reason = mysql_real_escape_string(messageArr[2]);
                 }
+            } else {
+                if (messageArr[1]) {
+                    loa.reason = mysql_real_escape_string(messageArr[1]);
+                }
             }
         }
         addloa(loa);
     }
-
-
 }
 
 function parseUpdateLoA(message, type, loa, permissions) {
