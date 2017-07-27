@@ -79,7 +79,15 @@
         ];
 
         $scope.returnItemId = function(grid, row) {
-            return row.entity.itemId;
+            var string = row.entity.itemId;
+            var is = row.entity.itemString.split(':');
+            if (is[13]) {
+                string += '&bonus=' + is[13];
+            }
+            if (is[14]) {
+                string += ':' + is[14];
+            }
+            return string;
         };
         $scope.returnItem = function(grid, row) {
             return row.entity.item;
