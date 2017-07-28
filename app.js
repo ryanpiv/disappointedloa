@@ -12,11 +12,11 @@ moment.tz.setDefault('America/New_York');
 const Events = Discordie.Events;
 const client = new Discordie();
 
-//var loachannel = '237085726208950272'; //real channel
-var loachannel = '266749722692288512'; //test channel
+var loachannel = '237085726208950272'; //real channel
+//var loachannel = '266749722692288512'; //test channel
 
-var token = 'MzAwODEwOTE1NTg0OTMzODg4.DFpGrQ.hZBCbBReKWzNS7xVurnkicY4qzE'; //test token
-//var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real token
+//var token = 'MzAwODEwOTE1NTg0OTMzODg4.DFpGrQ.hZBCbBReKWzNS7xVurnkicY4qzE'; //test token
+var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real token
 
 var connection = mysql.createConnection({
     host: 'mysql4.gear.host',
@@ -52,11 +52,8 @@ client.connect({
 });
 
 client.Dispatcher.on(Events.GATEWAY_READY, e => {
-    if (versionAnnounce == 0) {
-        console.log('Connected as: ' + client.User.username);
-        sendDiscordMessage(loachannel, "Disappointed LoA Bot v" + versionNum + " ready!  Type !LoAHelp to get a message about everything I can do.");
-        versionAnnounce += 1;
-    }
+    console.log('Connected as: ' + client.User.username);
+    sendDiscordMessage(loachannel, "Disappointed LoA Bot v" + versionNum + " ready!  Type !LoAHelp to get a message about everything I can do.");
 });
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
@@ -71,9 +68,6 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
         status: false,
         dateCheck: ''
     };
-    if (!loachannel) {
-        loachannel = e.channel_id;
-    }
     var user = client.Users.get(e.message.author.id);
     var channel = client.Channels.find(c => c.id == loachannel);
     var permissions = user.permissionsFor(channel);
