@@ -16,13 +16,13 @@ var loachannel = '237085726208950272'; //real channel
 //var loachannel = '266749722692288512'; //test channel
 
 //var token = 'MzAwODEwOTE1NTg0OTMzODg4.DFpGrQ.hZBCbBReKWzNS7xVurnkicY4qzE'; //test token
-var token = 'MzI2NDc4ODE4Mjg4MDc0NzUy.DDhzWg.upQWeuRPsCi5hsj_jvk139pM49w'; //real token
+var token = ''; //real token
 
 var connection = mysql.createConnection({
-    host: 'mysql4.gear.host',
-    user: 'disappointedloa',
-    password: 'Nr2s?!FlWSPG',
-    database: 'disappointedloa'
+    host: '',
+    user: '',
+    password: '',
+    database: ''
 });
 
 var versionNum = '3.2';
