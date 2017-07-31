@@ -1,11 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$username = "disappointedloa";
-$password = "Nr2s?!FlWSPG";
-$hostname = "mysql4.gear.host";
-$db = "disappointedloa";
-$con = mysqli_connect($hostname, $username, $password, $db);
+include 'connect.php';
 
 //query to see if game already exists
 $sql = "SELECT lh.instance, count(lh.instance) as instancecount from loot_history as lh inner join raiders as r on lh.player = r.player group by lh.instance order by lh.instance asc";

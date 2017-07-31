@@ -1,11 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$username = "disappointedloa";
-$password = "Nr2s?!FlWSPG";
-$hostname = "mysql4.gear.host";
-$db = "disappointedloa";
-$con = mysqli_connect($hostname, $username, $password, $db);
+include 'connect.php';
 
 //query to see if game already exists
 $sql = "SELECT count(*) as total FROM loot_history";
