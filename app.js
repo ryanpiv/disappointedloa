@@ -529,6 +529,8 @@ function parseLoot(url, permissions) {
 }
 
 function checkIfLootItemExists(lootArray) {
+    var duplicatesArray = [];
+    var submittedArray = [];
     sendDiscordMessage(loachannel, 'Beginning submission, please be patient while I process all items');
     async.each(lootArray, function(lootItem, callback) {
         // Perform operation on file here.
@@ -542,20 +544,30 @@ function checkIfLootItemExists(lootArray) {
                 return false;
             } else {
                 if (results.length > 0) {
-                    sendDiscordMessage(loachannel, 'Duplicate item found, skipping: ' + lootItem[0] + ', ' + lootItem[3] +
-                        ', ' + lootItem[1] + ' ' + lootItem[2] + ', ');
+                    duplicatesArray.push('Duplicate item found, skipping: ' + lootItem[0] + ', ' + lootItem[3] +
+                        ', ' + lootItem[1] + ' ' + lootItem[2]);
+
+                    console.log('Duplicate item found, skipping: ' + lootItem[0] + ', ' + lootItem[3] + ', ' + lootItem[1] + ' ' + lootItem[2]);
                     callback();
                 } else {
+                    submittedArray.push('Adding item: ' + lootItem[0] + ', ' + lootItem[3] + ', ' + lootItem[1] + ' ' + lootItem[2]);
                     addLootItem(lootItem, callback);
                 }
             }
         });
-    }, function(err) {
+    }, function(err, results) {
         // if any of the file processing produced an error, err would equal that error
-        console.log('err: ' + err);
+        var msg = '';
+        if (duplicatesArray.length > 0) {
+            msg += 'Skipping ' + duplicatesArray.length + ' duplicate items.\n';
+        }
+        msg += 'Submitting ' + submittedArray.length + ' new items.';
+        sendDiscordMessage(loachannel, msg);
+
         if (err) {
             // One of the iterations produced an error.
             // All processing will now stop.
+            console.log('err: ' + err);
             sendDiscordMessage(loachannel, 'An item failed to process: ' + err);
         } else {
             sendDiscordMessage(loachannel, 'All items have been processed successfully.');
