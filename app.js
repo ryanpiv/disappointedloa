@@ -12,10 +12,9 @@ moment.tz.setDefault('America/New_York');
 const Events = Discordie.Events;
 const client = new Discordie();
 
-var loachannel = '237085726208950272'; //real channel
-//var loachannel = '266749722692288512'; //test channel
+//var loachannel = '237085726208950272'; //real channel
+var loachannel = '266749722692288512'; //test channel
 
-//var token = 'MzAwODEwOTE1NTg0OTMzODg4.DFpGrQ.hZBCbBReKWzNS7xVurnkicY4qzE'; //test token
 var token = ''; //real token
 
 var connection = mysql.createConnection({
@@ -66,7 +65,8 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
         updateDate: '',
         updateReason: '',
         status: false,
-        dateCheck: ''
+        dateCheck: '',
+        batch: false
     };
     var user = client.Users.get(e.message.author.id);
     var channel = client.Channels.find(c => c.id == loachannel);
@@ -85,7 +85,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
             }
             switch (command) {
                 case '!loaabout':
-                    sendDiscordMessage(loachannel, "Hello!  I'm a bot to help manage LoAs.  I was created by the genius Smaktat and I'm here to (hopefully) make yours and everyone else's lives easier through effective and consistent management of LoAs.\n  Type !LoAHelp to get a direct message about all of the things I can do!");
+                    sendDiscordMessage(loachannel, "Hello!  I'm a bot to help manage LoAs.  I was created by the genius Smaktat and I'm here to (hopefully) make yours and everyone else's lives easier through effective and consistent management of LoAs.\nType !LoAHelp to get a direct message about all of the things I can do!");
                     break;
                 case '!noloa':
                     console.log('noloa executing');
@@ -106,7 +106,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                     break;
                 case '!loalate':
                     console.log('loalate executing');
-                    parseNormalLoA(e.message, 'late', loaObj, permissions);
+                    preParseLoA(e.message, 'late', loaObj, permissions);
                     break;
                 case '!loa':
                     console.log('loa executing');
@@ -114,13 +114,13 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                         if (permissions.General.ADMINISTRATOR == true) {
                             for (var i = 0; i < e.message.mentions.length; i++) {
                                 e.message.author = e.message.mentions[i];
-                                parseNormalLoA(e.message, 'normal', loaObj, permissions, e.message.mentions[i]);
+                                preParseLoA(e.message, 'normal', loaObj, permissions, e.message.mentions[i]);
                             }
                         } else {
                             sendDiscordMessage(loachannel, "Sorry " + e.message.author.username + ", you don't have the proper permission to do that.");
                         }
                     } else {
-                        parseNormalLoA(e.message, 'normal', loaObj, permissions);
+                        preParseLoA(e.message, 'normal', loaObj, permissions);
                     }
                     break;
                 case '!loadelete':
@@ -226,11 +226,14 @@ function checkDate(loa, permissions) {
             for (var i = 0; i < loaDays.length; i++) {
                 if (moment(loa.dateCheck).day() == loaDays[i]) {
                     loa.status = true;
+                    console.log('day: ' + moment(loa.dateCheck).day() + ', loaday: ' + loaDays[i]);
                 }
             }
             if (loa.status == false) {
-                var loaStr = '';
-                sendDiscordMessage(loachannel, 'The date entered was not on a set raid day.');
+                if (loa.batch == false) {
+                    var loaStr = '';
+                    sendDiscordMessage(loachannel, 'The date entered was not on a set raid day.');
+                }
             } else {
                 loa.status = true;
             }
@@ -272,9 +275,7 @@ function mysql_real_escape_string(val) {
     return val;
 };
 
-function parseNormalLoA(message, type, loa, permissions, loaUser) {
-    //standard loa function
-    //type can be changed
+function preParseLoA(message, type, loa, permissions, loaUser) {
     loa.discordId = message.author.id;
     loa.discordUsername = message.author.username;
     loa.type = type;
@@ -291,9 +292,41 @@ function parseNormalLoA(message, type, loa, permissions, loaUser) {
         loa.discordUsername = message.author.username;
     }
     loa.type = type;
+    var datesArr = messageArr[0].split(':');
+    if (datesArr.length > 1) {
+        loa.batch = true;
+    }
+    var currDate = datesArr[0];
 
-    loa.dateCheck = messageArr[0];
-    loa = checkDate(loa, permissions);
+    while (moment(currDate).isSameOrBefore(datesArr[1])) {
+        loa.status = false;
+        console.log('inside perparseloa');
+        console.log(currDate);
+        loa.dateCheck = currDate;
+        loa = checkDate(loa, permissions);
+
+        switch (type.toLowerCase()) {
+            case 'late':
+            case 'normal':
+                parseNormalLoA(messageArr, type, JSON.parse(JSON.stringify(loa)), permissions);
+                break;
+            case 'update':
+                parseUpdateLoA(messageArr, type, JSON.parse(JSON.stringify(loa)), permissions);
+                break;
+            case 'delete':
+                parseDeleteLoA(messageArr, type, JSON.parse(JSON.stringify(loa)), permissions);
+                break;
+            case 'noloa':
+                break;
+        }
+
+        currDate = moment(currDate).add(1, 'days').format('MM/DD/YYYY');
+    }
+}
+
+function parseNormalLoA(messageArr, type, loa, permissions) {
+    //standard loa function
+    //type can be changed
     if (loa.status) {
         loa.date = loa.dateCheck;
         if (messageArr[1]) {
@@ -312,13 +345,7 @@ function parseNormalLoA(message, type, loa, permissions, loaUser) {
     }
 }
 
-function parseUpdateLoA(message, type, loa, permissions) {
-    loa.discordId = message.author.id;
-    loa.discordUsername = message.author.username;
-    loa.type = type;
-    var messageContent = message.content.toLowerCase().replace('!loa' + type, '');
-    var messageArr = messageContent.toLowerCase().split(',');
-
+function parseUpdateLoA(messageArr, type, loa, permissions) {
     loa.dateCheck = messageArr[0];
     loa = checkDate(loa, permissions);
     if (loa.status) {
@@ -336,20 +363,8 @@ function parseUpdateLoA(message, type, loa, permissions) {
     }
 }
 
-function parseDeleteLoA(message, type, loa, permissions, loaUser) {
+function parseDeleteLoA(messageArr, type, loa, permissions) {
     //format: command <date>, mention
-    var messageContent = message.content.toLowerCase().replace('!loa' + type, '');
-    if (loaUser) {
-        loa.discordId = loaUser.id;
-        loa.discordUsername = loaUser.username;
-    } else {
-        loa.discordId = message.author.id;
-        loa.discordUsername = message.author.username;
-    }
-    loa.type = type;
-
-    var messageArr = messageContent.toLowerCase().split(',');
-
     loa.dateCheck = messageArr[0];
     loa = checkDate(loa, permissions);
     if (loa.status) {
@@ -377,27 +392,37 @@ function parseNoLoA(message, loaUser, type, loa, permissions) {
 }
 
 function addloa(loaObj) {
-    var sql = "SELECT * FROM loas WHERE discordid = '" + loaObj.discordId + "' AND date = DATE('" + moment(loaObj.date).format('YYYY-MM-DD') + "')";
-    connection.query(sql, function(error, results, fields) {
-        console.log('inside sql 1: ');
-        console.log(loaObj);
-        if (error) {
-            sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
-        } else {
+    console.log('beginning of addloa');
+    console.log(loaObj);
+
+    async.waterfall([
+        async.constant(loaObj),
+        function(loaObj, callback) {
+            console.log('inside sql 1: ');
+            console.log(loaObj);
+            var sql = "SELECT * FROM loas WHERE discordid = '" + loaObj.discordId + "' AND date = DATE('" + moment(loaObj.date).format('YYYY-MM-DD') + "')";
+            connection.query(sql, function(error, results, fields) {
+                callback(error, results, loaObj);
+            });
+        },
+        function(results, loaObj, callback) {
+            console.log('inside sql 2: ');
+            console.log(loaObj);
             if (results.length > 0) {
                 sendDiscordMessage(loachannel, "An LoA already exists for <@" + loaObj.discordId + "> on " + moment(loaObj.date).format('dddd, MM/DD/YY') + ".  For more information about commands, type !LoAHelp");
             } else {
-                console.log('inside sql 2: ');
-                console.log(loaObj);
                 var sql = "INSERT INTO loas (discordid, discordusername, reason, date, type) VALUES ('" + loaObj.discordId + "', '" + loaObj.discordUsername + "', '" + loaObj.reason + "', '" + moment(loaObj.date).format('YYYY-MM-DD') + "', '" + loaObj.type + "')";
                 connection.query(sql, function(error, results, fields) {
-                    if (error) {
-                        sendDiscordMessage(loachannel, error + ', <@105094681141977088>');
-                    } else {
-                        sendDiscordMessage(loachannel, 'The LoA on ' + moment(loaObj.date).format("dddd, MM/DD/YY") + ' for <@' + loaObj.discordId + '> has been added.');
-                    }
+                    callback(error, loaObj);
                 });
             }
+        }
+    ], function(err, loaObj) {
+        console.log(err);
+        if (err) {
+            sendDiscordMessage(loachannel, err + ', <@105094681141977088>');
+        } else {
+            sendDiscordMessage(loachannel, 'The LoA on ' + moment(loaObj.date).format("dddd, MM/DD/YY") + ' for <@' + loaObj.discordId + '> has been added.');
         }
     });
 }
