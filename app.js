@@ -84,31 +84,12 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
             }
             switch (command) {
                 case '!loaabout':
-                case '!loa about':
                     sendDiscordMessage(loachannel, "Hello!  I'm a bot to help manage LoAs.  I was created by the genius Smaktat and I'm here to (hopefully) make yours and everyone else's lives easier through effective and consistent management of LoAs.\nType !LoAHelp to get a direct message about all of the things I can do!");
                     break;
                 case '!loachanges':
                 case '!loaupdates':
-                case 'loanew':
-                case 'loachange':
-                case 'loaupdate':
                 case '!loalatest':
                     sendDiscordMessage(loachannel, "Batch LoAs have arrived!  You may add multiple LoAs at once with one command.\nExample: !LoA 10/1 : 10/25, vaca baby!\n\nAdded the wrong date range?  You can batch delete as well.\nExample: !LoADelete 10/1 : 10/25");
-                    break;
-                case '!loa':
-                    console.log('loa executing');
-                    if (e.message.mentions.length > 0) {
-                        if (permissions.General.ADMINISTRATOR == true) {
-                            for (var i = 0; i < e.message.mentions.length; i++) {
-                                e.message.author = e.message.mentions[i];
-                                preParseLoA(e.message, 'normal', loaObj, permissions, e.message.mentions[i]);
-                            }
-                        } else {
-                            sendDiscordMessage(loachannel, "Sorry " + e.message.author.username + ", you don't have the proper permission to do that.");
-                        }
-                    } else {
-                        preParseLoA(e.message, 'normal', loaObj, permissions);
-                    }
                     break;
                 case '!noloa':
                     console.log('noloa executing');
@@ -202,6 +183,21 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                         break;
                     }
                     break;
+                case '!loa':
+                    console.log('loa executing');
+                    if (e.message.mentions.length > 0) {
+                        if (permissions.General.ADMINISTRATOR == true) {
+                            for (var i = 0; i < e.message.mentions.length; i++) {
+                                e.message.author = e.message.mentions[i];
+                                preParseLoA(e.message, 'normal', loaObj, permissions, e.message.mentions[i]);
+                            }
+                        } else {
+                            sendDiscordMessage(loachannel, "Sorry " + e.message.author.username + ", you don't have the proper permission to do that.");
+                        }
+                    } else {
+                        preParseLoA(e.message, 'normal', loaObj, permissions);
+                    }
+                    break;
                 default:
                     console.log('default executing');
                     sendDiscordMessage(loachannel, "I couldn't understand that command.  Type !LoAHelp to get a message about everything I can do.");
@@ -251,6 +247,7 @@ function checkDate(loa, permissions) {
             loa.status = false;
         }
     } else {
+        console.log(loa);
         sendDiscordMessage(loachannel, "Unable to parse a date for the LoA requested.  LoA not added.  Please make your LoA request is in the correct format for the job you are requesting.  Reasons are not mandatory, but the comma is important!  For help or reference formats for creating an LoA, type !LoAHelp.");
         loa.status = false;
     }
@@ -305,7 +302,8 @@ function preParseLoA(message, type, loa, permissions, loaUser) {
     if (datesArr.length > 1) {
         loa.batch = true;
     }
-    var currDate = datesArr[0];
+    var currDate = parseDateTodayAndYear(datesArr[0]);
+    datesArr[1] = parseDateTodayAndYear(datesArr[1]);
 
     while (moment(currDate).isSameOrBefore(datesArr[1])) {
         loa.status = false;
@@ -330,7 +328,10 @@ function preParseLoA(message, type, loa, permissions, loaUser) {
         }
 
         if (loa.batch == true) {
+            console.log('in the if');
+            console.log(currDate);
             currDate = moment(currDate).add(1, 'days').format('MM/DD/YYYY');
+            console.log(currDate);
         } else {
             break;
         }
@@ -460,7 +461,9 @@ function deleteloa(loaObj) {
                 }
             });
         } else {
-            sendDiscordMessage(loachannel, 'There are no LoAs to delete for <@' + loaObj.discordId + '> on ' + moment(loaObj.date).format("dddd, MM/DD/YY") + '.');
+            if (loaObj.batch == false) {
+                sendDiscordMessage(loachannel, 'There are no LoAs to delete for <@' + loaObj.discordId + '> on ' + moment(loaObj.date).format("dddd, MM/DD/YY") + '.');
+            }
         }
     });
 }
