@@ -12,25 +12,24 @@ moment.tz.setDefault('America/New_York');
 const Events = Discordie.Events;
 const client = new Discordie();
 
-//var loachannel = '237085726208950272'; //real channel
-var loachannel = '266749722692288512'; //test channel
+var connectFile = require('./connect.js');
+var connString = connectFile.connString;
 
-var token = ''; //real token
-
+var token = connectFile.token;
 var connection = mysql.createConnection({
-    host: '',
-    user: '',
-    password: '',
-    database: ''
+    host: connString.host,
+    user: connString.user,
+    password: connString.password,
+    database: connString.database
 });
+
+var loachannel = connectFile.loachannel;
+var loaDays = [6, 0];
 
 var versionNum = '3.2';
 var versionAnnounce = 0;
 
 var sampleDate = moment().format('MM/DD/YY');
-
-var loaDays = [6, 0];
-
 var helpText = '__**Disappointed Leave of Absensce (LoA) Bot Help**__\n\n' +
     '**!LoA**: Create a basic LoA.\nFormat: !LoA <Date>, <Reason (optional)>\n' +
     'Example: !LoA ' + sampleDate + ', I will be on vacation.  You do not need to provide a reason, but someone people just like to.  In most cases, not providing a reason is preferred.\nExample wihout a reason: !loa ' + sampleDate + '\n\n' +
