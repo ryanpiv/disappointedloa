@@ -1,4 +1,4 @@
-//process.env.TZ = 'America/New_York';
+process.env.TZ = 'America/New_York';
 
 //discord bot link: https://discordapp.com/developers/applications/me/316216046107361281
 var Discordie = require('discordie');
