@@ -299,13 +299,17 @@ function preParseLoA(message, type, loa, permissions, loaUser) {
     }
     loa.type = type;
     var datesArr = messageArr[0].split(':');
+    var currDate = datesArr[0];
+    var endDate = '';
     if (datesArr.length > 1) {
         loa.batch = true;
+        endDate = parseDateTodayAndYear(datesArr[1]);
+        currDate = parseDateTodayAndYear(datesArr[0]);
+    } else {
+        endDate = parseDateTodayAndYear(datesArr[0]);
     }
-    var currDate = parseDateTodayAndYear(datesArr[0]);
-    datesArr[1] = parseDateTodayAndYear(datesArr[1]);
 
-    while (moment(currDate).isSameOrBefore(datesArr[1])) {
+    while (moment(currDate).isSameOrBefore(endDate)) {
         loa.status = false;
         console.log('inside perparseloa');
         console.log(currDate);
