@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 include 'connect.php';
 
 //query to see if game already exists
-$sql = "SELECT discordusername, count(*) as num FROM disappointedloa.loas where status=1 AND date < NOW() group by discordusername order by num desc";
+$sql = "SELECT discordusername, count(*) as num FROM disappointedloa.loas where status=1 AND date < NOW() group by discordid order by num desc";
 $result = $con->query($sql);
 
 try {
