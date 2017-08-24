@@ -3,8 +3,11 @@ header('Content-Type: application/json');
 
 include 'connect.php';
 
+$raidTier = $_GET['raidTier'];
+mysqli_real_escape_string($con, $raidTier);
+
 //query to see if game already exists
-$sql = "SELECT lh.response, count(lh.response) as responsecount from loot_history as lh inner join raiders as r on lh.player = r.player group by lh.response order by lh.response asc";
+$sql = "SELECT lh.response, count(lh.response) as responsecount from loot_history as lh inner join raiders as r on lh.player = r.player where lh.instance like '%$raidTier%' group by lh.response order by lh.response asc";
 $result = $con->query($sql);
 
 try {

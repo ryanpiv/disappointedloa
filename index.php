@@ -55,6 +55,12 @@
         <li><a href="#loaGrid">LoA Grid</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown" id="raid-selector">
+          <a id="raid-selector-active" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tomb of Sargeras<span class="caret" style="margin-left:5px"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Tomb of Sargeras</a></li>
+          </ul>
+        </li>
         <li><a>Night Mode</a></li>
         <li id="nightmodeToggle" class="li-slider">
           <label class="switch">

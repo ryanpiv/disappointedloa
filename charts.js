@@ -6,6 +6,7 @@ var color_text = '#333';
 var color_bg = '#fff';
 var color_gridlines = 'rgba(213, 213, 213, 0.7)';
 
+var raidTier;
 
 function toggleNightMode() {
     if (nightmode) {
@@ -36,10 +37,16 @@ function drawGrids() {
 }
 
 $(document).ready(function() {
+    raidTier = Cookies.get("disappointedloa_raidtier");
+    if (!raidTier) {
+        raidTier = "Tomb of Sargeras";
+        setRaidTier();
+    }
     //get nightmode from cookies
     getNightmodeCookie();
     toggleNightMode();
     drawGrids();
+
     if (nightmode) {
         $("#nightmodeToggle").find('input').prop('checked', true);
     }
@@ -55,7 +62,20 @@ $(document).ready(function() {
             nm_count = 0;
         }
     });
+
+    $('#raid-selector ul li').on('click', function() {
+        if (raidTier !== $(this).text()) {
+            raidTier = $(this).text();
+            setRaidTier();
+            drawGrids();
+        }
+    });
 });
+
+function setRaidTier() {
+    $("#raid-selector-active a").text(raidTier);
+    Cookies.set("disappointedloa_raidtier", raidTier);
+}
 
 function getNightmodeCookie() {
     nightmode = Cookies.get("disappointedloa_nightmode");
@@ -112,7 +132,7 @@ function createLootHistoryBarChart() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-unique-player-gear-count.php"
+        url: "js/data/get-unique-player-gear-count.php?raidTier=" + raidTier
     }).done(function(data) {
         var players = [];
         var players_items = [];
@@ -167,7 +187,7 @@ function createLootByClassPieChart() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-loot-by-class.php"
+        url: "js/data/get-loot-by-class.php?raidTier=" + raidTier
     }).done(function(data) {
         var classes = [];
         var classCount = [];
@@ -218,7 +238,7 @@ function createLootByResponsePieChart() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-loot-by-response.php"
+        url: "js/data/get-loot-by-response.php?raidTier=" + raidTier
     }).done(function(data) {
         var responses = [];
         var responseCount = [];
@@ -274,7 +294,7 @@ function createLootByTosDifficultyPieChart() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-loot-by-tos-difficulty.php"
+        url: "js/data/get-loot-by-raid-difficulty.php?raidTier=" + raidTier
     }).done(function(data) {
         var instances = [];
         var instancesCount = [];
@@ -333,7 +353,7 @@ function createLootTosTierByPlayerPieChart() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-player-tier-all.php"
+        url: "js/data/get-player-tier-all.php?raidTier=" + raidTier
     }).done(function(data) {
         var dataArray = [];
         var players = [];
@@ -425,7 +445,7 @@ function createLootTosTierByDifficultyChart() {
         lootTosTierByDifficultyChart.data.labels = lblArray;
         $.ajax({
             method: "GET",
-            url: "js/data/get-player-tier-normal.php"
+            url: "js/data/get-player-tier-normal.php?raidTier=" + raidTier
         }).done(function(data) {
             var playersItemsCount = Array.apply(null, Array(lblArray.length)).map(function() {
                 return 0
@@ -444,7 +464,7 @@ function createLootTosTierByDifficultyChart() {
         });
         $.ajax({
             method: "GET",
-            url: "js/data/get-player-tier-heroic.php"
+            url: "js/data/get-player-tier-heroic.php?raidTier=" + raidTier
         }).done(function(data) {
             var playersItemsCount = Array.apply(null, Array(lblArray.length)).map(function() {
                 return 0
@@ -464,7 +484,7 @@ function createLootTosTierByDifficultyChart() {
         });
         $.ajax({
             method: "GET",
-            url: "js/data/get-player-tier-mythic.php"
+            url: "js/data/get-player-tier-mythic.php?raidTier=" + raidTier
         }).done(function(data) {
             var playersItemsCount = Array.apply(null, Array(lblArray.length)).map(function() {
                 return 0
@@ -552,7 +572,7 @@ function createLootTosTierTokenDistributionChart() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-tokens-all.php"
+        url: "js/data/get-tokens-all.php?raidTier=" + raidTier
     }).done(function(data) {
         var tokensCount = sortTierArray(data);
         lootTosTierTokenDistributionChart.data.datasets[0].data = tokensCount;
@@ -560,7 +580,7 @@ function createLootTosTierTokenDistributionChart() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-tokens-normal.php"
+        url: "js/data/get-tokens-normal.php?raidTier=" + raidTier
     }).done(function(data) {
         var tokensCount = sortTierArray(data);
         lootTosTierTokenDistributionChart.data.datasets[1].data = tokensCount;
@@ -568,7 +588,7 @@ function createLootTosTierTokenDistributionChart() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-tokens-heroic.php"
+        url: "js/data/get-tokens-heroic.php?raidTier=" + raidTier
     }).done(function(data) {
         var tokensCount = sortTierArray(data);
         lootTosTierTokenDistributionChart.data.datasets[2].data = tokensCount;
@@ -576,7 +596,7 @@ function createLootTosTierTokenDistributionChart() {
     });
     $.ajax({
         method: "GET",
-        url: "js/data/get-tokens-mythic.php"
+        url: "js/data/get-tokens-mythic.php?raidTier=" + raidTier
     }).done(function(data) {
         var tokensCount = sortTierArray(data);
         lootTosTierTokenDistributionChart.data.datasets[3].data = tokensCount;

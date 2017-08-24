@@ -2,10 +2,13 @@
 header('Content-Type: application/json');
 include 'connect.php';
 
+$raidTier = $_GET['raidTier'];
+mysqli_real_escape_string($con, $raidTier);
+
 //query to see if game already exists
 $sql = "SELECT count(*) as num, item from disappointedloa.loot_history as lh
 where (lh.item like '%conqueror%' or lh.item like '%vanquisher%' or lh.item like '%protector%')
-and instance='Tomb of Sargeras-Mythic'
+and lh.instance='$raidTier-Mythic'
 group by item like '%conqueror%', item like '%vanquisher%', item like '%protector%'
 order by item";
 $result = $con->query($sql);
