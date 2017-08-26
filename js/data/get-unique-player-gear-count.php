@@ -9,7 +9,7 @@ mysqli_real_escape_string($con, $raidTier);
 $sql = "SELECT lh.player, count(*) as num, lh.class
 FROM loot_history as lh
 inner join raiders as r on lh.player = r.player
-where lh.instance like '$raidTier%'
+where lh.instance like '$raidTier%' and r.status = 1
 AND lh.response <> 'OS'
 AND lh.response <> 'Pass'
 AND lh.response <> 'xmog'
