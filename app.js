@@ -26,7 +26,7 @@ var connection = mysql.createConnection({
 var loachannel = connectFile.loachannel;
 var loaDays = [6, 0];
 
-var versionNum = '4.0.1';
+var versionNum = '4.0.2';
 var versionAnnounce = 0;
 
 var sampleDate = moment().format('MM/DD/YY');
@@ -51,7 +51,35 @@ client.connect({
 
 client.Dispatcher.on(Events.GATEWAY_READY, e => {
     console.log('Connected as: ' + client.User.username);
-    sendDiscordMessage(loachannel, "Disappointed LoA Bot v" + versionNum + " ready!  Type !LoAHelp to get a message about everything I can do.");
+    client.Channels.get(loachannel).fetchMessages(30).then(() => {
+        var messages = client.Channels.get(loachannel).messages;
+        var announceStatus = false;
+
+        for (var i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].content) {
+                var msg = messages[i].content;
+                var announce = "Disappointed LoA Bot v" + versionNum + " ready!  Type !LoAHelp to get a message about everything I can do.";
+
+                if (msg.includes("Disappointed LoA Bot v")) {
+                    announceStatus = true;
+
+                    if (!(msg.includes(versionNum))) {
+                        sendDiscordMessage(loachannel, announce);
+                    }
+
+                    break;
+                }
+            }
+        }
+        if (announceStatus == false) {
+            sendDiscordMessage(loachannel, announce);
+        }
+
+    }).catch((err) => {
+        sendDiscordMessage(loachannel, err);
+        console.log(err);
+    });
+
 });
 
 client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
