@@ -26,7 +26,7 @@ var connection = mysql.createConnection({
 var loachannel = connectFile.loachannel;
 var loaDays = [6, 0];
 
-var versionNum = '4.0.7';
+var versionNum = '4.0.8';
 var versionAnnounce = 0;
 
 var sampleDate = moment().format('MM/DD/YY');
