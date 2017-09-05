@@ -45,6 +45,8 @@ var helpTextTwo = '\n\n__**Admin Only Commands**__\n\n' +
     '**!Loot**: Type this command and attach a text file with RC Loot Council CSV (Comma Seperated Values) data.  Only works with an attachment.\n\n' +
     '**!NoLoA:** Creates an LoA for a user.\nFormat: !NoLoA <date>, <@User>\nExample: !NoLoA ' + sampleDate + ', @smaktat.';
 
+var latestUpdateText = "Batch LoAs have arrived!  You may add multiple LoAs at once with one command.\nExample: !LoA 10/1 : 10/25, vaca baby!\n\nAdded the wrong date range?  You can batch delete as well.\nExample: !LoADelete 10/1 : 10/25";
+
 client.connect({
     token: token
 });
@@ -117,7 +119,7 @@ client.Dispatcher.on(Events.MESSAGE_CREATE, e => {
                 case '!loachanges':
                 case '!loaupdates':
                 case '!loalatest':
-                    sendDiscordMessage(loachannel, "Batch LoAs have arrived!  You may add multiple LoAs at once with one command.\nExample: !LoA 10/1 : 10/25, vaca baby!\n\nAdded the wrong date range?  You can batch delete as well.\nExample: !LoADelete 10/1 : 10/25");
+                    sendDiscordMessage(loachannel, latestUpdateText);
                     break;
                 case '!noloa':
                     console.log('noloa executing');
