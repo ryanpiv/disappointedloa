@@ -47,12 +47,17 @@ var helpTextTwo = '\n\n__**Admin Only Commands**__\n\n' +
 
 var latestUpdateText = "Batch LoAs have arrived!  You may add multiple LoAs at once with one command.\nExample: !LoA 10/1 : 10/25, vaca baby!\n\nAdded the wrong date range?  You can batch delete as well.\nExample: !LoADelete 10/1 : 10/25";
 
+var game = { name: "~help | !LoAHelp" };
+client.User.setGame(game);
+
 client.connect({
     token: token
 });
 
 client.Dispatcher.on(Events.GATEWAY_READY, e => {
     console.log('Connected as: ' + client.User.username);
+    var game = { name: "~help | !LoAHelp" };
+    client.User.setGame(game);
     client.Channels.get(loachannel).fetchMessages(30).then(() => {
         var messages = client.Channels.get(loachannel).messages;
         var announceStatus = false;
